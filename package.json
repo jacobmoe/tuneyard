@@ -1,0 +1,15 @@
+{
+  "name": "tuneyard",
+  "version": "0.0.0",
+  "description": "collaborative playlist",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jacob Moeller",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.10.4",
+    "gulp": "^3.8.10"
+  }
+}
