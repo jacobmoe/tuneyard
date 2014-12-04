@@ -9,7 +9,11 @@
   "author": "Jacob Moeller",
   "license": "MIT",
   "dependencies": {
+    "config": "^1.8.1",
     "express": "^4.10.4",
-    "gulp": "^3.8.10"
+    "gulp": "^3.8.10",
+    "mongoose": "^3.8.20",
+    "passport": "^0.2.1",
+    "passport-local-mongoose": "^1.0.0"
   }
 }
