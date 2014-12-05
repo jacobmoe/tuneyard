@@ -9,6 +9,7 @@
   "author": "Jacob Moeller",
   "license": "MIT",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.10.0",
     "compression": "^1.2.1",
     "config": "^1.8.1",
@@ -18,6 +19,14 @@
     "mongoose": "^3.8.20",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
-    "passport-local-mongoose": "^1.0.0"
+    "passport-local-mongoose": "^1.0.0",
+    "q": "^1.1.2"
+  },
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "chai-spies": "^0.5.1",
+    "mocha": "^2.0.1",
+    "sinon": "^1.12.1",
+    "sinon-chai": "^2.6.0"
   }
 }

@@ -1,6 +1,8 @@
 var express = require('express')
-var mongoose = require('mongoose');
-var app = express()
+  , mongoose = require('mongoose');
+  , app = express()
+
+require('lib/middleware')(app)
 
 app.get('/', function (req, res) {
   res.send('Hello World!')

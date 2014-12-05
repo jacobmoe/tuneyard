@@ -1,0 +1,4 @@
+--require test/helper
+--recursive
+-R spec
+test/backend
