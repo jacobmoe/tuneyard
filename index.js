@@ -1,5 +1,6 @@
+process.env.NODE_ENV = process.env.NODE_ENV || 'development'
+
 var express = require('express')
-  , mongoose = require('mongoose');
   , app = express()
 
 require('lib/middleware')(app)
@@ -14,11 +15,4 @@ var server = app.listen(app.get('port'), function () {
   console.log('listening on port', server.address().port)
 })
 
-mongoose.connection.on('connected', function(ref) {
-  console.log('connected to mongo')
-})
-
-var nodeEnv = process.env.NODE_ENV || 'development'
-var dbName = "tuneyard-" + nodeEnv
-
-mongoose.connect('mongodb://localhost/' + dbName)
+require('./lib/db').connect()
