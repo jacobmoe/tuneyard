@@ -9,11 +9,15 @@
   "author": "Jacob Moeller",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.10.0",
+    "compression": "^1.2.1",
     "config": "^1.8.1",
+    "cookie-parser": "^1.3.3",
     "express": "^4.10.4",
     "gulp": "^3.8.10",
     "mongoose": "^3.8.20",
     "passport": "^0.2.1",
+    "passport-local": "^1.0.0",
     "passport-local-mongoose": "^1.0.0"
   }
 }
