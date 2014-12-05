@@ -9,7 +9,7 @@
   "author": "Jacob Moeller",
   "license": "MIT",
   "dependencies": {
-    "bcrypt-nodejs": "0.0.3",
+    "bcrypt": "^0.8.0",
     "body-parser": "^1.10.0",
     "compression": "^1.2.1",
     "config": "^1.8.1",
