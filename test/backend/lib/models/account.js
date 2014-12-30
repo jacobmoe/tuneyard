@@ -2,6 +2,8 @@ var Account = require('../../../../lib/models/account')
 
 describe('Model: Account', function () {
 
+  before(connectDb)
+
   describe('validations', function () {
     it('requires email, hash and salt', function (done) {
       Account.create({}, function (err, account) {
@@ -20,14 +22,12 @@ describe('Model: Account', function () {
     describe('validPassword', function () {
 
       it('compares given password with actual password', function (done) {
-        var params = {
-          email: 'test@example.com',
-          password: 'thepassword'
-        }
-
-        Account.create({email: 'test@example.com'}, function (err, account) {
-          console.log("====>", err, account)
-          done()
+        var account = new Account({email: 'test@example.com'})
+        account.setPassword('thepassword', 'thepassword', function (err) {
+          account.save(function () {
+            console.log("------------", err)
+            done()
+          })
         })
       })
 
