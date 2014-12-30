@@ -19,7 +19,7 @@ describe('Model: Account', function () {
       })
     })
   })
-  
+
   describe('#setPassword', function () {
     var password = 'test@example.com'
 
@@ -30,7 +30,7 @@ describe('Model: Account', function () {
 
         assert.ok(account.hash)
         assert.ok(account.salt)
-        
+
         assert.notEqual(password, account.hash)
 
         bcrypt.compare(password, account.hash, function(err, res) {
@@ -50,11 +50,11 @@ describe('Model: Account', function () {
 
         assert.isNull(account.hash)
         assert.isNull(account.salt)
-        
+
         done()
       })
     })
-    
+
   })
 
   describe('#validPassword', function () {
@@ -83,6 +83,5 @@ describe('Model: Account', function () {
       done()
     })
   })
-  
 
 })

@@ -3,11 +3,8 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 var express = require('express')
   , app = express()
 
-require('lib/middleware')(app)
-
-app.get('/', function (req, res) {
-  res.send('Hello World!')
-})
+require('./lib/middleware')(app)
+require('./lib/routes')(app)
 
 app.set('port', process.env.PORT || 3000)
 
