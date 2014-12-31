@@ -5,4 +5,5 @@ block content
 
     .sidebar(ng-controller="SidebarCtrl")
       ty-login-form(ng-show='!currentUser')
+      ty-chat(ng-show='currentUser')
       a.button(ng-show='currentUser' ng-click='logout()') logout

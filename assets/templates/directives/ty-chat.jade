@@ -1,0 +1,7 @@
+.ty-chat
+  .chat-box
+    ul.messages
+      li.message(ng-repeat='message in messages') {{message}}
+      
+
+  input(type='text' ng-enter='newMessage()')
