@@ -1,6 +1,6 @@
 var bcrypt = require('bcrypt')
 
-var Account = require('../../../../lib/models/account')
+var Account = require('../../../lib/models/account')
 
 describe('Model: Account', function () {
 
