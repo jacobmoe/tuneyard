@@ -4,6 +4,6 @@ block content
   .wrapper(ui-view, ng-controller="MainCtrl")
 
     .sidebar(ng-controller="SidebarCtrl")
-      ty-login-form(ng-show='!currentUser')
-      ty-chat(ng-show='currentUser')
-      a.button(ng-show='currentUser' ng-click='logout()') logout
+      ty-login-form(ng-if='!currentUser')
+      ty-chat(ng-if='currentUser')
+      a.button(ng-if='currentUser' ng-click='logout()') logout

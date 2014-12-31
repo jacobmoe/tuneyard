@@ -1,7 +1,7 @@
 .ty-chat
   .chat-box
     ul.messages
-      li.message(ng-repeat='message in messages') {{message}}
+      li.message(ng-repeat='message in messages') {{message.createdAt | date : 'short' }} - {{message.account.name}} - {{message.content}}
       
 
-  input(type='text' ng-enter='newMessage()')
+  input(type='text' ng-enter='newMessage()' ng-model='currentMessage')

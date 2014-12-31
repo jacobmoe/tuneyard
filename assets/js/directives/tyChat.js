@@ -3,11 +3,25 @@ angular.module('tuneyard').directive('tyChat', function() {
     restrict: 'E',
     replace: true,
     templateUrl: '/assets/templates/directives/ty-chat.html',
-    controller: ['$scope', 'socket', function($scope, socket) {
+    controller: ['$scope', '$rootScope', 'socket', function($scope, $rootScope, socket) {
+      $scope.currentMessage = ''
+      $scope.messages = []
       
       $scope.newMessage = function () {
-        debugger
+        socket.emit('add-new-message', {
+          content: $scope.currentMessage,
+          account: $rootScope.currentUser._id
+        })
+        $scope.currentMessage = ''
       }
+      
+      socket.on('new-message', function (data) {
+        $scope.messages.push(data)
+      })
+      
+      socket.on('init-messages', function (data) {
+        $scope.messages = data
+      })
 
     }]
   }
