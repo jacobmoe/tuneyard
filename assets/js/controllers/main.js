@@ -1,7 +1,6 @@
 angular.module('tuneyard').controller('MainCtrl',
   ['$scope', '$rootScope', 'auth',
   function($scope, $rootScope, auth) {
-
     $rootScope.$on('auth-changed', function (event, data) {
       $rootScope.currentUser = data
     })
