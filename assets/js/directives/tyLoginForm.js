@@ -10,7 +10,7 @@ angular.module('tuneyard').directive('tyLoginForm', function() {
       $scope.submit = function () {
         auth.login($scope.formData)
         .then(function (user) {
-          debugger
+          $scope.formData = {}
         })
         .catch(function (err) {
           $scope.errors.login = "no dice"
