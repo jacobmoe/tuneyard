@@ -1,7 +1,7 @@
 {
-  "name": "accounter",
+  "name": "tuneyard",
   "version": "0.0.0",
-  "description": "web service for user account authentication",
+  "description": "tunes",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
