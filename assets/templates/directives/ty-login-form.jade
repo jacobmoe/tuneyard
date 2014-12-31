@@ -1,2 +1,13 @@
 .ty-login-form
-  div TEST
+  form(ng-submit="submit()")
+    input(
+      type='email'
+      placeholder="Your email address"
+      ng-model="formData.email")
+
+    input(
+      type='password'
+      placeholder="Your password"
+      ng-model='formData.password')
+
+    button.loginSubmit#login(type='submit') Login   
