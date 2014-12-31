@@ -20,7 +20,9 @@ angular.module('tuneyard').directive('tyChat', function() {
       })
       
       socket.on('init-messages', function (data) {
-        $scope.messages = data
+        $scope.messages = _.sortBy(data, function (m) {
+          return new Date(m.createdAt)
+        })
       })
 
     }]
