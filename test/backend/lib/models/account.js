@@ -15,6 +15,7 @@ describe('Model: Account', function () {
         assert.equal('ValidatorError', err.errors.email.name)
         assert.equal('ValidatorError', err.errors.hash.name)
         assert.equal('ValidatorError', err.errors.salt.name)
+
         done()
       })
     })
@@ -24,8 +25,13 @@ describe('Model: Account', function () {
     var password = 'test@example.com'
 
     it('encrypts and sets the password', function (done) {
-      var account = new Account({email: 'test@example.com'})
-      account.setPassword(password, password, function (err) {
+      var account = new Account({
+        email: 'test@example.com',
+        password: password,
+        passwordConfirmation: password
+      })
+
+      account.setPassword(function (err) {
         assert.isNull(err)
 
         assert.ok(account.hash)
@@ -43,8 +49,13 @@ describe('Model: Account', function () {
     })
 
     it('returns an error when password does not match confirmation', function (done) {
-      var account = new Account({email: 'test@example.com'})
-      account.setPassword(password, 'notthepassword', function (err) {
+      var account = new Account({
+        email: 'test@example.com',
+        password: password,
+        passwordConfirmation: 'notthepassword'
+      })
+
+      account.setPassword(function (err) {
         assert.ok(err)
         assert.isObject(err)
 
@@ -60,14 +71,17 @@ describe('Model: Account', function () {
   describe('#validPassword', function () {
     var account, password = 'test@example.com'
 
+    var params = {
+      email: 'test@example.com',
+      password: password,
+      passwordConfirmation: password
+    }
+
     beforeEach(function (done) {
-      var a = new Account({email: 'test@example.com'})
-      a.setPassword(password, password, function (err) {
-        a.save(function (err) {
-          assert.isNull(err)
-          account = a
-          done()
-        })
+      Account.create(params, function (err, a) {
+        assert.isNull(err)
+        account = a
+        done()
       })
     })
 
