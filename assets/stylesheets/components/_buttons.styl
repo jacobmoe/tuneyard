@@ -1,0 +1,96 @@
+.button
+  display: inline-block
+  border: 0
+  border-radius: 2px
+  padding: 5px 10px
+  cursor: pointer
+  transition: transition
+  text-align: center
+  text-decoration: none
+  font-size: 14px
+  .icon
+    margin-right: 5px
+    margin-bottom: -2px
+    display: inline-block
+    width: 16px
+    height: 16px
+
+.button--large
+  padding: 15px
+
+.button--primary
+  background: primary-color
+  color: white
+  .icon
+    fill: white
+  &:hover
+    background: primary-dark
+    color: white
+  &.button--outline
+    background: transparent
+    border: 1px solid primary-color
+    color: primary-color
+    .icon
+      fill: primary-color
+    &:hover
+      background: transparent
+      border-color: primary-dark
+      color: primary-dark
+
+.button--secondary
+  background: secondary-light
+  color: white
+  .icon
+    fill: white
+  &:hover
+    background: secondary-color
+    color: white
+  &.button--next
+    &:after
+      border-left-color: secondary-light
+    &:hover
+      &:after
+        border-left-color: secondary-color
+
+.button--next
+  position: relative
+  &:before, &:after
+    content: ''
+    display: block
+    border-left: 10px solid white
+    border-top: 10px solid transparent
+    border-bottom: 10px solid transparent
+    position: absolute
+    right: 20px 
+    top: 50% 
+    margin-top: -10px
+    z-index: 1
+    transition: transition
+  &:after
+    z-index: 2
+    margin-right: 2px
+  &:hover
+    &:before, &:after
+      right: 18px
+
+
+.button--tertiary
+  background: rgb(200, 200, 200)
+  color: rgb(111, 111, 111);
+  .icon
+    fill: black
+  &:hover
+    background: grey-color
+    color: white
+    .icon
+      fill: white
+  &.button--outline
+    background: #EFEFED
+    color: grey-color
+    .icon
+      fill: grey-color
+    &:hover
+      color: black
+      border-color: black
+      .icon
+        fill: black
