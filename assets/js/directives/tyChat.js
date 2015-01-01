@@ -21,7 +21,11 @@ function(socket, $rootScope) {
       scope.isLast = function (index) {
         return index === scope.messages.length - 1
       }
-
+      
+      scope.$watchCollection('messages', function () {
+        scrollToChatBottom()
+      })
+      
       socket.on('new-message', function (data) {
         scope.messages.push(data)
       })
@@ -37,10 +41,6 @@ function(socket, $rootScope) {
           type: 'notice',
           account: data
         })
-      })
-
-      scope.$watchCollection('messages', function () {
-        scrollToChatBottom()
       })
 
       function scrollToChatBottom() {

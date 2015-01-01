@@ -3,11 +3,14 @@ extends ./layout
 block content 
   .wrapper(ui-view, ng-controller="MainCtrl")
 
-    .sidebar(ng-controller="SidebarCtrl")
-      ty-login-form(ng-if='!currentUser')
-      ty-chat(ng-if='currentUser')
-      a.button(ng-if='currentUser' ng-click='logout()') logout
-      
-    .content THE TUNEYARD
+    .sidebar(ng-controller="SidebarCtrl" ng-class="{'sidebar--open': sidebarOpen}")
+      a.fa.u-pullRight(
+        ng-click='toggleOpen()'
+        class="{{sidebarOpen ? 'fa-times' : 'fa-bars'}}")
 
+      .sidebar-body(ng-show="sidebarOpen")
+        ty-login-form(ng-if='!currentUser')
+        ty-chat(ng-if='currentUser')
+        a.button(ng-if='currentUser' ng-click='logout()') logout
       
+    .content.u-pageCenter THE TUNE YARD
