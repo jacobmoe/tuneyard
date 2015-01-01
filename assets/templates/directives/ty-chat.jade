@@ -1,10 +1,17 @@
 .tyChat
   .chatBox
-    .grid(ng-repeat='message in messages' id="{{isLast($index) ? 'lastMessage' : ''}}")
-      .grid__item.one-twelfth
-        .label {{message.account.name}}
-      .grid__item.one-half {{message.content}}
-      .grid__item.one-eighth
-        .label--small {{message.createdAt | date : 'short' }}
+    .grid.chatBox-item(ng-repeat='message in messages')
+      .chatBox-item-content(ng-if='!message.type')
+        .grid__item.one-fifth
+          .label.u-alignRight {{message.account.name}}
+        .grid__item.one-half
+          .small {{message.content}}
+        .grid__item.one-quarter
+          .label--small {{message.createdAt | date : 'short' }}
+      .chatBox-item-content.chatBox-item-content--notice(ng-if="message.type == 'notice'")
+        .grid__item.one-fifth
+        .grid__item.one-half
+          .small {{message.account.name}} connected
+        .grid__item.one-quarter
 
   input(type='text' ng-enter='newMessage()' ng-model='currentMessage')
