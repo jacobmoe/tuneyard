@@ -1,0 +1,40 @@
+.combo
+  display: table
+  width: 100%
+  > .combo-first
+    width: 0
+    white-space: nowrap
+    padding-right: 5px
+    img
+      max-width: none
+  > .combo-last
+    width: 100%
+    padding-left: 5px
+
+.combo-first, .combo-last
+  display: table-cell
+  vertical-align: middle
+
+.combo--top
+  > *
+    vertical-align: top
+
+.combo--rev
+  > .combo-first
+    width: 100%
+    white-space: normal
+  > .combo-last
+    width: 0
+    white-space: nowrap
+    img
+      max-width: none
+
+.combo--full
+  > .combo-first
+    padding-right: 0
+  > .combo-last
+    padding-left: 0
+
+.combo--half
+	> .combo-first, > .combo-last
+		width: 50%

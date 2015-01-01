@@ -1,7 +1,10 @@
-.ty-chat
-  .chat-box
-    ul.messages
-      li.message(ng-repeat='message in messages') {{message.createdAt | date : 'short' }} - {{message.account.name}} - {{message.content}}
-      
+.tyChat
+  .chatBox
+    .grid(ng-repeat='message in messages' id="{{isLast($index) ? 'lastMessage' : ''}}")
+      .grid__item.one-twelfth
+        .label {{message.account.name}}
+      .grid__item.one-half {{message.content}}
+      .grid__item.one-eighth
+        .label--small {{message.createdAt | date : 'short' }}
 
   input(type='text' ng-enter='newMessage()' ng-model='currentMessage')
