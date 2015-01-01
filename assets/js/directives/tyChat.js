@@ -39,7 +39,14 @@ function(socket, $rootScope) {
       socket.on('notice:userConnected', function (data) {
         scope.messages.push({
           type: 'notice',
-          account: data
+          content: data.name + ' connected'
+        })
+      })
+
+      socket.on('tracks:new', function (data) {
+        scope.messages.push({
+          type: 'notice',
+          content: 'New track added: ' + data.title
         })
       })
 
