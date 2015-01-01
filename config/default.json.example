@@ -1,5 +1,5 @@
 {
-  "youtube": {
-    "key": "< YOUTUBE KEY >"
+  "api-keys": {
+    "youtube": "< YOUTUBE KEY >"
   }
 }
