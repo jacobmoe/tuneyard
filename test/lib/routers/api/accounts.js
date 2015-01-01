@@ -1,9 +1,9 @@
 var request = require('supertest')
   , app = require('express')()
 
-var routes = require('../../../lib/routes')
-  , middleware = require('../../../lib/middleware')
-  , Account = require('../../../lib/models/account')
+var routes = require('../../../../lib/routes')
+  , middleware = require('../../../../lib/middleware')
+  , Account = require('../../../../lib/models/account')
 
 middleware(app)
 routes(app)

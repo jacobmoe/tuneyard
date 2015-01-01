@@ -1,9 +1,9 @@
 var request = require('supertest')
   , app = require('express')()
 
-var router = require('../../../lib/routers/api/sessions')
-  , middleware = require('../../../lib/middleware')
-  , Account = require('../../../lib/models/account')
+var router = require('../../../../lib/routers/api/sessions')
+  , middleware = require('../../../../lib/middleware')
+  , Account = require('../../../../lib/models/account')
 
 middleware(app)
 app.use('/api/sessions', router)
