@@ -39,6 +39,7 @@ gulp.task('build', [
   'assets:js',
   'assets:vendor:css',
   'assets:vendor:js',
+  'assets:vendor:fonts',
   'assets:html',
   'assets:images'
 ])

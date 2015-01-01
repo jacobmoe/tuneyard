@@ -49,3 +49,7 @@ gulp.task('assets:images', function() {
     .pipe(gulp.dest('./dist/img/'))
 })
 
+gulp.task('assets:vendor:fonts', function() {
+  gulp.src(dependencies.fonts)
+    .pipe(gulp.dest('./dist/fonts/'))
+})

@@ -8,5 +8,13 @@ module.exports = {
     'node_modules/socket.io/node_modules/socket.io-client/socket.io.js'
   ],
   css: [
+    'bower_components/fontawesome/css/font-awesome.min.css'
+  ],
+  fonts: [
+    'bower_components/fontawesome/fonts/FontAwesome.otf',
+    'bower_components/fontawesome/fonts/fontawesome-webfont.eot',
+    'bower_components/fontawesome/fonts/fontawesome-webfont.svg',
+    'bower_components/fontawesome/fonts/fontawesome-webfont.ttf',
+    'bower_components/fontawesome/fonts/fontawesome-webfont.woff'
   ]
 }
