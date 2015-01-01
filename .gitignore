@@ -1,6 +1,7 @@
 node_modules
 bower_components
 data
+config/default.json
 config/production.json
 dist
 .DS_Store
