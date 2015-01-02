@@ -7,6 +7,8 @@ function(socket, $rootScope) {
     replace: true,
     templateUrl: '/assets/templates/directives/ty-player.html',
     link: function(scope, element) {
+      var initialized
+
       scope.track = {}
 
       scope.playerVars = {
@@ -14,7 +16,14 @@ function(socket, $rootScope) {
         autoplay: 1
       }
 
-      socket.emit('player:loaded', {playlist: 'default'})
+      $rootScope.$watch('currentPlaylistId', function () {
+        var id = $rootScope.currentPlaylistId
+
+        if (id && !initialized) {
+          socket.emit('player:loaded', {playlistId: id})
+          initialized = true
+        }
+      })
 
       socket.on('tracks:startNew', function (data) {
         console.log("new current track", data)

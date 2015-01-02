@@ -1,6 +1,4 @@
-angular.module('tuneyard').factory('auth',
-  ['$http', '$q', '$rootScope',
-  function($http, $q, $rootScope) {
+angular.module('tuneyard').factory('sourceParser', ['$rootScope', function($rootScope) {
 
     // http://stackoverflow.com/a/10315969/624466
     function youtubeId(url) {

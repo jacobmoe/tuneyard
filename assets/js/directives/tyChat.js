@@ -1,20 +1,35 @@
 angular.module('tuneyard').directive('tyChat', [
-'socket', '$rootScope',
-function(socket, $rootScope) {
+'socket', '$rootScope', 'Playlist', 'sourceParser',
+function(socket, $rootScope, Playlist, sourceParser) {
 
   return {
     restrict: 'E',
     replace: true,
     templateUrl: '/assets/templates/directives/ty-chat.html',
     link: function(scope, element) {
+      
       scope.currentMessage = ''
       scope.messages = []
 
       scope.newMessage = function () {
-        socket.emit('add-new-message', {
+        var playlist = Playlist.new($rootScope.currentPlaylistId)
+        
+        var sourceData = sourceParser.parse(scope.currentMessage)
+        
+        if (sourceData) {
+          playlist.insertTrack(sourceData, function (err, data) {
+            socket.emit('notices:send', {
+              type: 'notice',
+              content: 'New track added: ' + data.title
+            })
+          })
+        }
+
+        socket.emit('messages:new', {
           content: scope.currentMessage,
           account: $rootScope.currentUser._id
         })
+
         scope.currentMessage = ''
       }
 
@@ -25,31 +40,22 @@ function(socket, $rootScope) {
       scope.$watchCollection('messages', function () {
         scrollToChatBottom()
       })
-      
-      socket.on('new-message', function (data) {
+
+      socket.on('messages:new', function (data) {
         scope.messages.push(data)
       })
 
-      socket.on('init-messages', function (data) {
+      socket.on('messages:init', function (data) {
         scope.messages = _.sortBy(data, function (m) {
           return new Date(m.createdAt)
         })
       })
 
-      socket.on('notice:userConnected', function (data) {
-        scope.messages.push({
-          type: 'notice',
-          content: data.name + ' connected'
-        })
-      })
+      socket.on('notices:new', function (data) {
+        console.log('new notice', data)
+        data.type = 'notice'
 
-      socket.on('tracks:new', function (data) {
-        console.log('new track added', data)
-
-        scope.messages.push({
-          type: 'notice',
-          content: 'New track added: ' + data.title
-        })
+        scope.messages.push(data)
       })
 
       function scrollToChatBottom() {
@@ -59,7 +65,7 @@ function(socket, $rootScope) {
         chatBox.scrollTop = chatBox.scrollHeight
       }
 
-      socket.emit('init-chat', $rootScope.currentUser)
+      socket.emit('messages:init:client', $rootScope.currentUser)
     }
   }
 
