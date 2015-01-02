@@ -1,77 +1,8 @@
-// radio button formatting
-input[type='radio'], input[type='checkbox']
-  + label
-    position: relative
-    padding-left: 28px
-    cursor: pointer
-    color: black
-    text-transform: none
-    &:before, &:after
-      content: ''
-      display: block
-      width: 20px
-      height: 20px
-      border-radius: 100%
-      border: 1px solid grey-light
-      background: white
-      position: absolute
-      top: 50% 
-      margin-top: -10px
-      left: 0
-      z-index: 1
-    &:before
-      transition: transition
-    &:after
-      z-index: 2
-      background: primary-color
-      border-color: primary-color
-      opacity: 0
-      transform: scale(0)
-      transition: all 0.2s bounce
-    &:hover
-      &:before
-        border-color: grey-color
-  &:checked
-    + label
-      &:after
-        opacity: 1
-        transform: scale(1)
-
-input[type='checkbox']
-  + label
-    &:before, &:after
-      border-radius: 0
-    &:after
-      display: none
-    .icon
-      width: 20px
-      height: 20px
-      fill: primary-color
-      position: absolute
-      top: 50% 
-      margin-top: -10px
-      left: 0
-      z-index: 2
-      opacity: 0
-      transform: scale(0)
-      transition: all 0.2s bounce
-  &:checked
-    + label
-      .icon
-        opacity: 1
-        transform: scale(0.8)
-
 .form-group
   margin-bottom: 20px
 
-label
-  color: primary-color
-  text-transform: uppercase
-  display: block
-  font-size: 14px
-
 input
-  &[type='text'], &[type='password'], &[type='tel'], &[type='email'], &[type='search']
+  &[type='text'], &[type='password'], &[type='email']
     border: 0
     width: 90%
     border-bottom: 1px solid rgba(136, 136, 136, 0.4)
@@ -82,22 +13,3 @@ input
     background: transparent
     &:focus
       outline: 0
-
-select
-  background: white
-  -webkit-appearance: none
-  border: 1px solid primary-color
-  color: primary-color
-  border-radius: 0
-  padding: 5px 10px
-  font-size: 16px
-  width: 100%
-  cursor: pointer
-  transition: transition
-  border-radius: 2px
-  font-family: proxima-nova, sans-serif
-  background: url('/img/arrow-down.gif') no-repeat top 12px right 10px
-  &:focus, &:hover
-    border-color: primary-dark
-    color: primary-dark
-    outline: none
