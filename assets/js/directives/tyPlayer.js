@@ -8,7 +8,11 @@ function(socket, $rootScope) {
     templateUrl: '/assets/templates/directives/ty-player.html',
     link: function(scope, element) {
       socket.on('tracks:startNew', function (data) {
-        scope.messages.push(data)
+        debugger
+      })
+
+      socket.on('playlists:error', function (error) {
+        debugger
       })
     }
   }

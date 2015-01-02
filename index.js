@@ -9,7 +9,7 @@ require('./lib/middleware')(app)
 require('./lib/routes')(app)
 require('./lib/wsServer')(io)
 
-require('./lib/services/playlist').initialize(io)
+require('./lib/services/player').initialize(io)
 
 app.set('port', process.env.PORT || 3000)
 

@@ -1,8 +1,9 @@
 extends ./layout
 
 block content 
-  .wrapper(ui-view, ng-controller="MainCtrl")
+  ty-player
 
+  .wrapper(ui-view, ng-controller="MainCtrl")
     .sidebar(ng-controller="SidebarCtrl" ng-class="{'sidebar--open': sidebarOpen}")
       a.fa.u-pullRight(
         ng-click='toggleOpen()'
