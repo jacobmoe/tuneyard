@@ -4,6 +4,7 @@ module.exports = {
     'bower_components/angular/angular.js',
     'bower_components/angular-socket-io/socket.min.js',
     'bower_components/lodash/dist/lodash.min.js',
+    'bower_components/angular-youtube-mb/dist/angular-youtube-embed.min.js',
 
     'node_modules/socket.io/node_modules/socket.io-client/socket.io.js'
   ],

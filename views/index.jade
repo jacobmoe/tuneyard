@@ -1,8 +1,6 @@
 extends ./layout
 
 block content 
-  ty-player
-
   .wrapper(ui-view, ng-controller="MainCtrl")
     .sidebar(ng-controller="SidebarCtrl" ng-class="{'sidebar--open': sidebarOpen}")
       a.fa.u-pullRight(
@@ -14,4 +12,6 @@ block content
         ty-chat(ng-if='currentUser')
         a.button(ng-if='currentUser' ng-click='logout()') logout
       
-    .content.u-pageCenter THE TUNE YARD
+    .content.u-pageCenter
+      | THE TUNE YARD
+      ty-player
