@@ -4,7 +4,8 @@
   "description": "tunes",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "./node_modules/.bin/gulp build"
   },
   "author": "Jacob Moeller",
   "license": "MIT",

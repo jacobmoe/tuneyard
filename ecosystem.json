@@ -1,0 +1,20 @@
+{
+  "apps" : [{
+    "name"      : "tuneyard",
+    "script"    : "index.js",
+    "env_production": {
+      "NODE_ENV": "production",
+      "PORT": "80"
+    }
+  }],
+  "deploy" : {
+    "production" : {
+      "user" : "deploy",
+      "host" : "thetuneyard.com",
+      "ref"  : "origin/production",
+      "repo" : "git@github.com:jacobmoe/tuneyard.git",
+      "path" : "/web/tuneyard.com",
+      "post-deploy" : "npm install && bower install && npm run build && pm2 startOrRestart ecosystem.json --env production"
+    }
+  }
+}
