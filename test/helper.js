@@ -21,7 +21,7 @@ global.defer = Q.defer
 
 global.clearCollections = function (done) {
   var jobs = []
-  var collections = ['account']
+  var collections = ['account', 'playlist']
   
   collections.forEach(function (col) {
     jobs.push(function (cb) {

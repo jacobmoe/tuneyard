@@ -10,7 +10,7 @@ function(socket, $rootScope) {
       scope.track = {}
 
       scope.playerVars = {
-        controls: 0,
+        // controls: 0,
         autoplay: 1
       }
 
@@ -19,13 +19,15 @@ function(socket, $rootScope) {
       socket.on('tracks:startNew', function (data) {
         console.log("new current track", data)
         scope.track = data
-        delete scope.playerVars.start
+        
+        if (scope.playerVars.start)
+          delete scope.playerVars.start
       })
       
       socket.on('player:initialize', function (data) {
         console.log("init player", data)
         scope.track = data
-        scope.playerVars.start = data.startAt
+        scope.playerVars.start = Number(data.startAt).toFixed()
       })
 
       socket.on('playlist:error', function (error) {
