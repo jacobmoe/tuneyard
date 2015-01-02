@@ -13,7 +13,7 @@ angular.module('tuneyard').directive('tyLoginForm', function() {
           $scope.formData = {}
         })
         .catch(function (err) {
-          $scope.errors.login = "no dice"
+          $scope.errors.login = "No dice. Are you who you think you are?"
         })
       }
     }]

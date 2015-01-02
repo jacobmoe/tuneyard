@@ -8,6 +8,10 @@ angular.module('tuneyard').controller('MainCtrl',
     auth.getUser().then(function (user) {
       $rootScope.currentUser = user
     })
+    
+    $rootScope.$on('newTrack', function (event, data) {
+      $rootScope.currentTrack = data
+    })
 
     $scope.logout = function () {
       auth.logout().then(function () {

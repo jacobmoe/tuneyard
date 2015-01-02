@@ -10,4 +10,8 @@
       placeholder="Your password"
       ng-model='formData.password')
 
-    button.loginSubmit#login(type='submit') Login   
+    .u-spacer
+    button.button.button--primary.loginSubmit#login(type='submit') Login   
+    
+    .u-spacer
+    .errors(ng-show='errors.login') {{errors.login}}

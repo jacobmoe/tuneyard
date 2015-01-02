@@ -13,5 +13,5 @@ block content
         a.button(ng-if='currentUser' ng-click='logout()') logout
       
     .content.u-pageCenter
-      | THE TUNE YARD
+      | {{ currentTrack.title }}
       ty-player

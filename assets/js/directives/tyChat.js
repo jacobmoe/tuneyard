@@ -1,6 +1,6 @@
 angular.module('tuneyard').directive('tyChat', [
-'socket', '$rootScope', 'Playlist', 'sourceParser',
-function(socket, $rootScope, Playlist, sourceParser) {
+'socket', '$rootScope', 'Playlist', 'sourceParser', '$timeout',
+function(socket, $rootScope, Playlist, sourceParser, $timeout) {
 
   return {
     restrict: 'E',
@@ -59,10 +59,13 @@ function(socket, $rootScope, Playlist, sourceParser) {
       })
 
       function scrollToChatBottom() {
-        var chatBox = element.find('.chatBox')[0]
-        if (!chatBox) return
+        $timeout(function () {
+          var chatBox = element.find('.chatBox')[0]
+          if (!chatBox) return
 
-        chatBox.scrollTop = chatBox.scrollHeight
+          chatBox.scrollTop = chatBox.scrollHeight
+        }, 50)
+
       }
 
       socket.emit('messages:init:client', $rootScope.currentUser)
