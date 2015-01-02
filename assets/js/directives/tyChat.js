@@ -16,7 +16,15 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout) {
         
         var sourceData = sourceParser.parse(scope.currentMessage)
         
-        if (sourceData) {
+        if (scope.currentMessage === 'drop') {
+          if ($rootScope.currentTrack) {
+            var index = $rootScope.currentTrack.index
+            playlist.deleteTrack(index, function (err, data) {
+              socket.emit('notices:send', {type: 'notice', content: 'Track dropped'})
+              socket.emit('playlists:trackDropped', {index: index, playlistId: playlist.id})
+            })
+          }
+        } else if (sourceData) {
           playlist.insertTrack(sourceData, function (err, data) {
             socket.emit('notices:send', {
               type: 'notice',
