@@ -44,6 +44,8 @@ function(socket, $rootScope) {
       })
 
       socket.on('tracks:new', function (data) {
+        console.log('new track added', data)
+
         scope.messages.push({
           type: 'notice',
           content: 'New track added: ' + data.title
