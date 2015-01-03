@@ -6,4 +6,8 @@
     player="youtubePlayer"
     player-vars="playerVars")
 
+
+  a.fa.fa-volume-up(ng-click='mute(youtubePlayer)' ng-show='!muted')
+  a.fa.fa-volume-off(ng-click='unMute(youtubePlayer)' ng-show='muted')
+  .spacer
   | {{ currentTrack.title }}

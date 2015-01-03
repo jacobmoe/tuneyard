@@ -8,12 +8,25 @@ function(socket, $rootScope) {
     templateUrl: '/assets/templates/directives/ty-player.html',
     link: function(scope, element) {
       var initialized
+      var muted = false
 
       scope.track = {}
 
       scope.playerVars = {
         controls: 0,
         autoplay: 1
+      }
+      
+      scope.mute = function (youtubePlayer) {
+        scope.youtubePlayer = youtubePlayer
+
+        youtubePlayer.mute()
+        scope.muted = true
+      }
+
+      scope.unMute = function (youtubePlayer) {
+        youtubePlayer.unMute()
+        scope.muted = false
       }
       
       $rootScope.$watch('currentPlaylistId', function () {
@@ -33,6 +46,9 @@ function(socket, $rootScope) {
           delete scope.playerVars.start
         
         $rootScope.$broadcast('newTrack', data)
+        
+        if (scope.muted && scope.youtubePlayer) 
+          scope.youtubePlayer.mute()
       })
       
       socket.on('player:initialize', function (data) {
