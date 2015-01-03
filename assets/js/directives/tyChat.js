@@ -7,49 +7,47 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout) {
     replace: true,
     templateUrl: '/assets/templates/directives/ty-chat.html',
     link: function(scope, element) {
-      
+
       scope.currentMessage = ''
       scope.messages = []
 
       scope.newMessage = function () {
         var playlist = Playlist.new($rootScope.currentPlaylistId)
-        
+
         var sourceData = sourceParser.parse(scope.currentMessage)
-        
+
+        socket.emit('messages:create', {
+          content: scope.currentMessage,
+          account: $rootScope.currentUser._id
+        })
+
         if (scope.currentMessage === 'drop') {
           if ($rootScope.currentTrack) {
             var index = $rootScope.currentTrack.index
             playlist.deleteTrack(index, function (err, data) {
-              socket.emit('notices:send', {type: 'notice', content: 'Track dropped'})
-              socket.emit('playlists:trackDropped', {index: index, playlistId: playlist.id})
+              socket.emit('messages:create', {content: 'Track dropped'})
+              socket.emit('playlists:trackDropped', {
+                index: index,
+                playlistId: playlist.id
+              })
             })
           }
         } else if (sourceData) {
           playlist.insertTrack(sourceData, function (err, data) {
-            socket.emit('notices:send', {
-              type: 'notice',
+            socket.emit('messages:create', {
               content: 'New track added: ' + data.title
             })
           })
         }
 
-        socket.emit('messages:new', {
-          content: scope.currentMessage,
-          account: $rootScope.currentUser._id
-        })
-
         scope.currentMessage = ''
       }
 
-      scope.isLast = function (index) {
-        return index === scope.messages.length - 1
-      }
-      
       scope.$watchCollection('messages', function () {
         scrollToChatBottom()
       })
 
-      socket.on('messages:new', function (data) {
+      socket.on('messages:display', function (data) {
         scope.messages.push(data)
       })
 
