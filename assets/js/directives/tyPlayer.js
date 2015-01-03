@@ -1,6 +1,6 @@
 angular.module('tuneyard').directive('tyPlayer', [
-'socket', '$rootScope',
-function(socket, $rootScope) {
+'socket', '$rootScope', '$timeout',
+function(socket, $rootScope, $timeout) {
 
   return {
     restrict: 'E',
@@ -8,8 +8,8 @@ function(socket, $rootScope) {
     templateUrl: '/assets/templates/directives/ty-player.html',
     link: function(scope, element) {
       var initialized
-      var muted = false
 
+      scope.muted = false
       scope.track = {}
 
       scope.playerVars = {
@@ -18,8 +18,6 @@ function(socket, $rootScope) {
       }
       
       scope.mute = function (youtubePlayer) {
-        scope.youtubePlayer = youtubePlayer
-
         youtubePlayer.mute()
         scope.muted = true
       }
@@ -28,6 +26,10 @@ function(socket, $rootScope) {
         youtubePlayer.unMute()
         scope.muted = false
       }
+
+      scope.$on('youtube.player.ready', function ($event, player) {
+        if (scope.muted) player.mute()
+      })
       
       $rootScope.$watch('currentPlaylistId', function () {
         var id = $rootScope.currentPlaylistId
@@ -46,9 +48,6 @@ function(socket, $rootScope) {
           delete scope.playerVars.start
         
         $rootScope.$broadcast('newTrack', data)
-        
-        if (scope.muted && scope.youtubePlayer) 
-          scope.youtubePlayer.mute()
       })
       
       socket.on('player:initialize', function (data) {
