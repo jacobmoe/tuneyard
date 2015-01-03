@@ -5,7 +5,7 @@ block content
     .sidebar(ng-controller="SidebarCtrl" ng-class="{'sidebar--open': sidebarOpen}")
       a.fa.u-pullRight(
         ng-click='toggleOpen()'
-        class="{{sidebarOpen ? 'fa-times' : 'fa-bars'}}")
+        class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}")
 
       .sidebar-body(ng-show="sidebarOpen")
         ty-login-form(ng-if='!currentUser')
