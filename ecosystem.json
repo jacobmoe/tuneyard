@@ -13,7 +13,7 @@
       "host" : "thetuneyard.com",
       "ref"  : "origin/production",
       "repo" : "git@github.com:jacobmoe/tuneyard.git",
-      "path" : "/web/tuneyard.com",
+      "path" : "/web/thetuneyard.com",
       "post-deploy" : "npm install && bower install && npm run build && pm2 startOrRestart ecosystem.json --env production"
     }
   }
