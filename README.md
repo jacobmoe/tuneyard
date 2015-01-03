@@ -1,10 +1,3 @@
-  _______ .     . __    _ .____  _      _     .    .___  .___  
- '   /    /     / |\   |  /       `.   /     /|    /   \ /   ` 
-     |    |     | | \  |  |__.      `./     /  \   |__-' |    |
-     |    |     | |  \ |  |         ,'     /---'\  |  \  |    |
-     /     `._.'  |   \|  /----/ _-'     ,'      \ /   \ /---/ 
-                                                               
-
 A collaborative playlist. Inspired by twg.fm
 
 [thetuneyard.com](http://thetuneyard.com)
