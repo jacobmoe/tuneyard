@@ -80,4 +80,51 @@ describe('model: Playlist', function () {
     })
   })
 
+  describe('#nextTrack', function () {
+    var playlist
+
+    beforeEach(function (done) {
+      var params = {
+        name: 'default',
+        tracks: [
+          {
+            title: 'track1',
+            source: 'Youtube',
+            sourceId: '1',
+            length: 1
+          },
+          {
+            title: 'track2',
+            source: 'Youtube',
+            sourceId: '2',
+            length: 2
+          }
+        ],
+        currentTrackIndex: 0
+      }
+
+      Playlist.create(params, function (err, p) {
+        assert.isNull(err)
+        assert.ok(p)
+        assert.equal(p.tracks.length, 2)
+        playlist = p
+        done()
+      })
+    })
+
+    it('sets currentTrackIndex to next', function (done) {
+      assert.equal(0, playlist.currentTrackIndex)
+
+      playlist.nextTrack()
+      
+      assert.equal(1, playlist.currentTrackIndex)
+
+      playlist.nextTrack()
+
+      assert.equal(0, playlist.currentTrackIndex)
+      
+      done()
+    })
+  })
+
 })

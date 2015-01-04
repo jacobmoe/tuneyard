@@ -1,6 +1,6 @@
 angular.module('tuneyard').directive('tyChat', [
-'socket', '$rootScope', 'Playlist', 'sourceParser', '$timeout',
-function(socket, $rootScope, Playlist, sourceParser, $timeout) {
+'socket', '$rootScope', 'Playlist', 'sourceParser', '$timeout', 'chatCommands',
+function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
 
   return {
     restrict: 'E',
@@ -14,30 +14,21 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout) {
       scope.newMessage = function () {
         var playlist = Playlist.new($rootScope.currentPlaylistId)
 
-        var sourceData = sourceParser.parse(scope.currentMessage)
-
         socket.emit('messages:create', {
           content: scope.currentMessage,
           account: $rootScope.currentUser._id
         })
 
-        if (scope.currentMessage === 'drop') {
-          if ($rootScope.currentTrack) {
-            var index = $rootScope.currentTrack.index
-            playlist.deleteTrack(index, function (err, data) {
-              socket.emit('messages:create', {content: 'Track dropped'})
-              socket.emit('playlists:trackDropped', {
-                index: index,
-                playlistId: playlist.id
+        if (!chatCommands.process(scope.currentMessage, playlist)) {
+          var sourceData = sourceParser.parse(scope.currentMessage)
+
+          if (sourceData) {
+            playlist.insertTrack(sourceData, function (err, data) {
+              socket.emit('messages:create', {
+                content: 'New track added: ' + data.title
               })
             })
           }
-        } else if (sourceData) {
-          playlist.insertTrack(sourceData, function (err, data) {
-            socket.emit('messages:create', {
-              content: 'New track added: ' + data.title
-            })
-          })
         }
 
         scope.currentMessage = ''
