@@ -67,7 +67,7 @@ describe('router: playlists/tracks', function () {
 
       it('returns a collection of tracks', function (done) {
         agent
-          .get('/api/playlists/' + playlist.id + '/tracks')
+          .get('/api/playlists/' + playlist.name + '/tracks')
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -117,7 +117,7 @@ describe('router: playlists/tracks', function () {
       
       it('inserts a track in the playlist', function (done) {
         agent
-          .post('/api/playlists/' + playlist.id + '/tracks')
+          .post('/api/playlists/' + playlist.name + '/tracks')
           .send({source: 'Youtube', sourceId: '1'})
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
@@ -137,7 +137,7 @@ describe('router: playlists/tracks', function () {
     context('not authorized', function () {
       it('returns a 403', function (done) {
         request(app)
-          .post('/api/playlists/' + playlist.id + '/tracks')
+          .post('/api/playlists/' + playlist.name + '/tracks')
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(403)
@@ -169,7 +169,7 @@ describe('router: playlists/tracks', function () {
       
       it('returns track at index', function (done) {
         agent
-          .get('/api/playlists/' + playlist.id + '/tracks/0')
+          .get('/api/playlists/' + playlist.name + '/tracks/0')
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -202,7 +202,7 @@ describe('router: playlists/tracks', function () {
       
       it('removes the track at index from the playlist', function (done) {
         agent
-          .delete('/api/playlists/' + playlist.id + '/tracks/0')
+          .delete('/api/playlists/' + playlist.name + '/tracks/0')
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -220,7 +220,7 @@ describe('router: playlists/tracks', function () {
     context('not authorized', function () {
       it('returns a 403', function (done) {
         request(app)
-          .delete('/api/playlists/' + playlist.id + '/tracks/0')
+          .delete('/api/playlists/' + playlist.name + '/tracks/0')
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(403)
