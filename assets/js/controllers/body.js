@@ -1,4 +1,4 @@
-angular.module('tuneyard').controller('MainCtrl',
+angular.module('tuneyard').controller('BodyCtrl',
   ['$scope', '$rootScope', 'auth', 'socket',
   function($scope, $rootScope, auth, socket) {
     $rootScope.$on('auth-changed', function (event, data) {

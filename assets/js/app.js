@@ -1,5 +1,6 @@
 angular.module('tuneyard', [
   'btford.socket-io',
-  'youtube-embed'
+  'youtube-embed',
+  'ui.router'
 ])
 .config(function() {})

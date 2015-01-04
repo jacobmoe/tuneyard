@@ -1,16 +1,4 @@
 extends ./layout
 
 block content 
-  .wrapper(ui-view, ng-controller="MainCtrl")
-    .sidebar(ng-controller="SidebarCtrl" ng-class="{'sidebar--open': sidebarOpen}")
-      a.fa.u-pullRight(
-        ng-click='toggleOpen()'
-        class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}")
-
-      .sidebar-body(ng-show="sidebarOpen")
-        ty-login-form(ng-if='!currentUser')
-        ty-chat(ng-if='currentUser')
-        a.button(ng-if='currentUser' ng-click='logout()') logout
-
-    .content
-      ty-player
+  .wrapper(ui-view)
