@@ -15,11 +15,8 @@ function($stateProvider, $urlRouterProvider, $locationProvider) {
       function ($rootScope, $http, $location) {
         var path = $location.path()
 
-        if (path === '/')
-          path = '/default'
-
+        if (path === '/') path = '/default'
         var url = 'api/playlists' + path + '?truncated=true'
-        var url = '/api/playlists/default?truncated=true'
 
         return $http.get(url).then(function (response) {
           $rootScope.currentPlaylist = response.data
@@ -30,6 +27,9 @@ function($stateProvider, $urlRouterProvider, $locationProvider) {
         return auth.getUser().then(function (user) {
           $rootScope.currentUser = user
           return user
+        })
+        .catch(function () {
+          return null
         })
       }]
     },
@@ -47,7 +47,7 @@ function($stateProvider, $urlRouterProvider, $locationProvider) {
   .state('index.default', {
     url: '/'
   })
-  .state('index.reddit', {
+  .state('index.custom', {
     url: '/{playlistName:(?:reddit|default)}'
   })
 }])

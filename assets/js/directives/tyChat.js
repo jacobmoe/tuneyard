@@ -65,7 +65,10 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
 
       }
 
-      socket.emit('messages:init:client', $rootScope.currentUser)
+      socket.emit('messages:init:client', {
+        user: $rootScope.currentUser,
+        playlist: $rootScope.currentPlaylist
+      })
     }
   }
 
