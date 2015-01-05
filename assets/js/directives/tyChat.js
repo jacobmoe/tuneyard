@@ -12,7 +12,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
       scope.messages = []
 
       scope.newMessage = function () {
-        var playlist = Playlist.new($rootScope.currentPlaylistId)
+        var playlist = Playlist.new($rootScope.currentPlaylist)
 
         socket.emit('messages:create', {
           content: scope.currentMessage,

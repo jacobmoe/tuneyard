@@ -1,4 +1,6 @@
 extends ./layout
 
 block content 
-  .wrapper(ui-view)
+  .wrapper
+    div(ui-view='sidebar')
+    .content(ui-view='body')

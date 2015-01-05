@@ -1,14 +1,11 @@
 angular.module('tuneyard').controller('BodyCtrl',
-  ['$scope', '$rootScope', 'auth', 'socket',
-  function($scope, $rootScope, auth, socket) {
+  ['$scope', '$rootScope', 'socket',
+  function($scope, $rootScope, socket) {
+
     $rootScope.$on('auth-changed', function (event, data) {
       $rootScope.currentUser = data
     })
 
-    auth.getUser().then(function (user) {
-      $rootScope.currentUser = user
-    })
-    
     $rootScope.$on('newTrack', function (event, data) {
       $rootScope.currentTrack = data
     })
@@ -18,11 +15,5 @@ angular.module('tuneyard').controller('BodyCtrl',
         console.log('logged out')
       })
     }
-    
-    socket.on('playlists:current', function (data) {
-      $rootScope.currentPlaylistId = data
-    })
-
-    socket.emit('playlists:getCurrent', {playlistName: 'default'})
   }
 ])

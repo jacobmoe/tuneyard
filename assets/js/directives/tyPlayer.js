@@ -7,8 +7,6 @@ function(socket, $rootScope, $timeout) {
     replace: true,
     templateUrl: '/assets/templates/directives/ty-player.html',
     link: function(scope, element) {
-      var initialized
-
       scope.muted = false
       scope.track = {}
 
@@ -31,15 +29,6 @@ function(socket, $rootScope, $timeout) {
         if (scope.muted) player.mute()
       })
       
-      $rootScope.$watch('currentPlaylistId', function () {
-        var id = $rootScope.currentPlaylistId
-
-        if (id && !initialized) {
-          socket.emit('player:loaded', {playlistId: id})
-          initialized = true
-        }
-      })
-
       socket.on('tracks:startNew', function (data) {
         console.log("new current track", data)
         scope.track = data
@@ -61,6 +50,8 @@ function(socket, $rootScope, $timeout) {
       socket.on('playlist:error', function (error) {
         console.log('playlist error', error)
       })
+
+      socket.emit('player:loaded', {playlistId: $rootScope.currentPlaylist.id})
     }
   }
 
