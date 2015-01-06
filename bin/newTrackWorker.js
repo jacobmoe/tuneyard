@@ -3,30 +3,86 @@
 var request = require('request')
   , prompt = require('prompt')
   , _ = require('lodash')
+  , async = require('async')
 
 var Playlist = require('../lib/models/playlist')
   , db = require('../lib/db')
+  , youtube = require('../lib/services/youtube')
 
-var url = 'http://www.reddit.com/r/indieheads.json'
+var domain = 'http://www.reddit.com'
 
-function fetchTracks(playlist, cb) {
+var subs = [
+  'indieheads',
+  'indie'
+]
+
+function trackInPlaylist(playlist, vidId) {
+  return _.some(playlist.tracks, {sourceId: vidId})
+}
+
+function buildTrack(playlist, data, cb) {
+  var vidId = youtube.videoIdFromUrl(data.url)
+
+  if (!vidId) return cb()
+  
+  if (trackInPlaylist(playlist, vidId)) return cb()
+
+  youtube.getVideoData(vidId, function (err, videoData) {
+    if (err) return cb()
+
+    var track = {
+      title: videoData.title,
+      source: 'Youtube',
+      sourceId: vidId,
+      length: videoData.length
+    }
+
+    playlist.insertTrack(track)
+    playlist.save(cb)
+  })
+
+}
+
+function fetchTracks(playlist, url, done) {
   var jobs = []
 
   request(url, function (err, res, body) {
     if (err || !body) return cb()
-    
+
     var data = JSON.parse(body).data
 
     _.forEach(data.children, function (post) {
-      console.log("======>", post.data.domain)
-    })
+      var data = post.data || {}
+      var media = data.media || {}
 
-    cb()
+      if (data.domain === 'youtube.com') {
+        var oembed = media.oembed || {}
+
+        if (oembed.title && oembed.url) {
+          jobs.push(function (cb) {
+            buildTrack(playlist, {title:  oembed.title, url: oembed.url}, cb)
+          })
+        }
+      }
+    })
+    
+    async.series(jobs, done)
   })
 }
 
 db.connect(function () {
+  var jobs = []
+
   Playlist.findOne({name: 'new'}, function (err, playlist) {
-    fetchTracks(playlist, process.exit)
+    _.forEach(subs, function (sub) {
+      var url = domain + '/r/' + sub + '.json'
+
+      jobs.push(function (cb) {
+        fetchTracks(playlist, url, cb)
+      })
+
+    })
+    
+    async.series(jobs, process.exit)
   })
 })
