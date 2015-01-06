@@ -24,7 +24,7 @@ function buildTrack(playlist, data, cb) {
   var vidId = youtube.videoIdFromUrl(data.url)
 
   if (!vidId) return cb()
-  
+
   if (trackInPlaylist(playlist, vidId)) return cb()
 
   youtube.getVideoData(vidId, function (err, videoData) {
@@ -65,7 +65,7 @@ function fetchTracks(playlist, url, done) {
         }
       }
     })
-    
+
     async.series(jobs, done)
   })
 }
@@ -82,7 +82,7 @@ db.connect(function () {
       })
 
     })
-    
+
     async.series(jobs, process.exit)
   })
 })
