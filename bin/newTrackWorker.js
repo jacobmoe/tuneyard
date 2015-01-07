@@ -32,6 +32,8 @@ function buildTrack(playlist, data, cb) {
 
   youtube.getVideoData(vidId, function (err, videoData) {
     if (err) return cb()
+    
+    console.log('adding new track:', videoData.title)
 
     var track = {
       title: videoData.title,
