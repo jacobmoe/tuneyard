@@ -1,6 +1,5 @@
 var request = require('supertest')
   , app = require('express')()
-  , nock = require('nock')
 
 var routes = require('../../../../lib/routes')
   , middleware = require('../../../../lib/middleware')

@@ -13,7 +13,10 @@ var domain = 'http://www.reddit.com'
 
 var subs = [
   'indieheads',
-  'indie'
+  'indie',
+  'indiefolk',
+  'folkrock',
+  'indie_rock'
 ]
 
 function trackInPlaylist(playlist, vidId) {
@@ -75,7 +78,7 @@ db.connect(function () {
 
   Playlist.findOne({name: 'new'}, function (err, playlist) {
     _.forEach(subs, function (sub) {
-      var url = domain + '/r/' + sub + '.json'
+      var url = domain + '/r/' + sub + '.json?limit=100'
 
       jobs.push(function (cb) {
         fetchTracks(playlist, url, cb)
