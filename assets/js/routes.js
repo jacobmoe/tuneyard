@@ -48,6 +48,6 @@ function($stateProvider, $urlRouterProvider, $locationProvider) {
     url: '/'
   })
   .state('index.custom', {
-    url: '/{playlistName:(?:new|default)}'
+    url: '/{playlistName:(?:fm|default)}'
   })
 }])

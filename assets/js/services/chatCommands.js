@@ -19,7 +19,7 @@ function($rootScope, socket) {
   function skip(playlist) {
     socket.emit('playlists:skipTrack', {playlistId: playlist.id})
   }
-  
+
   function process(str, playlist) {
     switch (str) {
       case 'drop':

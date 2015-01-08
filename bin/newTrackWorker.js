@@ -78,7 +78,7 @@ function fetchTracks(playlist, url, done) {
 db.connect(function () {
   var jobs = []
 
-  Playlist.findOne({name: 'new'}, function (err, playlist) {
+  Playlist.findOne({name: 'default'}, function (err, playlist) {
     _.forEach(subs, function (sub) {
       var url = domain + '/r/' + sub + '.json?limit=100'
 
