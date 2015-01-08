@@ -25,8 +25,8 @@ function($http) {
     .error(function(err) { done(err) })
   }
 
-  function initialize(id) {
-    return new Playlist(id)
+  function initialize(params) {
+    return new Playlist(params)
   }
 
   return {

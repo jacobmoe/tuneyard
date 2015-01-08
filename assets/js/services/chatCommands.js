@@ -1,6 +1,6 @@
 angular.module('tuneyard').factory('chatCommands', [
-'$rootScope', 'socket',
-function($rootScope, socket) {
+'$rootScope', 'socket', 'Playlist', 'socket',
+function($rootScope, socket, Playlist, socket) {
 
   function drop(playlist) {
     if ($rootScope.currentTrack) {
@@ -20,7 +20,29 @@ function($rootScope, socket) {
     socket.emit('playlists:skipTrack', {playlistId: playlist.id})
   }
 
+  function add(newPlaylistName) {
+    var newPlaylist = Playlist.new({name: newPlaylistName})
+
+    newPlaylist.insertTrack($rootScope.currentTrack, function (err, result) {
+      if (err) {
+        socket.emit('notices:send', {content: 'no playlist with that name'})
+      } else {
+        socket.emit('messages:create', {
+          content: $rootScope.currentTrack.title + ' added to ' + newPlaylistName
+        })
+      }
+    })
+  }
+
   function process(str, playlist) {
+    var regex = /^add to ([\w-]*$)/
+    var match = str.match(regex)
+
+    if (match) {
+      add(match[1], playlist)
+      return true
+    }
+
     switch (str) {
       case 'drop':
         drop(playlist)
@@ -28,11 +50,10 @@ function($rootScope, socket) {
       case 'skip':
         skip(playlist)
         return true
-      default:
-        return false
     }
-  }
 
+    return false
+  }
 
   return {
     process: process
