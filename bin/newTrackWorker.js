@@ -11,12 +11,17 @@ var Playlist = require('../lib/models/playlist')
 
 var domain = 'http://www.reddit.com'
 
+// http://www.reddit.com/r/Music/wiki/musicsubreddits
+
 var subs = [
   'indieheads',
   'indie',
   'indiefolk',
   'folkrock',
-  'indie_rock'
+  'indie_rock',
+  'indiewok',
+  'flocked',
+  'folk'
 ]
 
 function trackInPlaylist(playlist, vidId) {
