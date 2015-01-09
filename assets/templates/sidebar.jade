@@ -1,7 +1,8 @@
 .sidebar(ng-class="{'sidebar--open': sidebarOpen}")
   a.fa.u-pullRight(
     ng-click='toggleOpen()'
-    class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}")
+    class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}"
+    ng-class="unread ? 'u-color--primary' : 'u-color--grey'")
 
   .sidebar-body(ng-show="sidebarOpen")
     ty-login-form(ng-if='!currentUser')

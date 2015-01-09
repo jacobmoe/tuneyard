@@ -2,7 +2,7 @@ angular.module('tuneyard').controller('SidebarCtrl',
   ['$scope', '$rootScope', 'playlist', 'auth',
   function($scope, $rootScope, playlist, auth) {
     $scope.sidebarOpen = false
-    $scope.unread = null
+    $rootScope.unread = null
 
     $scope.toggleOpen = function () {
       if (!$scope.sidebarOpen)
