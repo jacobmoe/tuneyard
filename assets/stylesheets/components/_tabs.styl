@@ -1,0 +1,37 @@
+.tab-trigger
+  padding: 0
+  margin: 0
+  list-style-type: none
+  text-align: center
+  clearfix()
+  li
+    float: left
+    border: 1px solid grey-light
+    background: grey-color
+    padding: 10px 25px
+    cursor: pointer
+    width: 35
+    &:first-child
+      border-top-left-radius: radius
+    &:last-child
+      border-top-right-radius: radius
+    &.active
+      background: white-color
+      cursor: default
+      border-bottom-color: white-color
+
+.tab-content
+  padding: 0
+  margin: 0
+  list-style-type: none
+  margin-top: -1px
+  margin-bottom: 20px
+  li
+    display: none
+    border: 1px solid grey-light
+    padding: 25px
+    border-radius: radius
+    border-top-left-radius: 0
+    &.active
+      display: block
+      background: white-color

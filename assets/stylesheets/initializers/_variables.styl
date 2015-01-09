@@ -20,3 +20,12 @@ sidebar-width = 450px
 sidebar-width-collapsed = 5px
 sidebar-footer-height = 141px
 default-font-size = 16px
+
+clearfix()
+  zoom 1
+  &:after
+  &:before
+    content ""
+    display table
+  &:after
+    clear both

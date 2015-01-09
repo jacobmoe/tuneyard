@@ -1,10 +1,21 @@
 .sidebar(ng-class="{'sidebar--open': sidebarOpen}")
+
   a.fa.u-pullRight(
     ng-click='toggleOpen()'
     class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}"
     ng-class="unread ? 'u-color--primary' : 'u-color--grey'")
 
+
   .sidebar-body(ng-show="sidebarOpen")
     ty-login-form(ng-if='!currentUser')
     ty-chat(ng-if='currentUser')
     a.button(ng-if='currentUser' ng-click='logout()') logout
+
+    // ul.tab-trigger
+    //   li(
+    //     ng-click="gotoPlaylist('default')"
+    //     ng-class="{active: currentPlaylist.name === 'default'}") new
+
+    //   li(
+    //     ng-click="gotoPlaylist('fm')"
+    //     ng-class="{active: currentPlaylist.name === 'fm'}") fm

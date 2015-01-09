@@ -16,6 +16,7 @@ function($stateProvider, $urlRouterProvider, $locationProvider) {
         var path = $location.path()
 
         if (path === '/') path = '/default'
+
         var url = 'api/playlists' + path + '?truncated=true'
 
         return $http.get(url).then(function (response) {

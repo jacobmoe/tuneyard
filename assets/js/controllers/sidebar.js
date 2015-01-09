@@ -1,6 +1,6 @@
 angular.module('tuneyard').controller('SidebarCtrl',
-  ['$scope', '$rootScope', 'playlist', 'auth',
-  function($scope, $rootScope, playlist, auth) {
+  ['$scope', '$rootScope', 'playlist', 'auth', '$state',
+  function($scope, $rootScope, playlist, auth, $state) {
     $scope.sidebarOpen = false
     $rootScope.unread = null
 
@@ -9,6 +9,14 @@ angular.module('tuneyard').controller('SidebarCtrl',
         $rootScope.unread = null
 
       $scope.sidebarOpen = !$scope.sidebarOpen
+    }
+ 
+    $scope.gotoPlaylist = function (name) {
+      if (name === 'default') {
+        $state.go('index.default', {reload: true})
+      } else {
+        $state.go('index.custom', {playlistName: name}, {reload: true})
+      }
     }
 
     $rootScope.$on('auth-changed', function (event, data) {
