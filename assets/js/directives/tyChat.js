@@ -7,7 +7,6 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
     replace: true,
     templateUrl: '/assets/templates/directives/ty-chat.html',
     link: function(scope, element) {
-
       scope.currentMessage = ''
       scope.messages = []
 
@@ -40,6 +39,8 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
 
       socket.on('messages:display', function (data) {
         scope.messages.push(data)
+
+        $rootScope.$broadcast('messages:display', data)
       })
 
       socket.on('messages:init', function (data) {

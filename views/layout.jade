@@ -1,7 +1,7 @@
 doctype
-html
+html(ng-app="tuneyard")
   head
-    title Tuneyard
+    title Tuneyard {{unread && '(' + unread + ')'}}
     link(href='/assets/css/vendor.css', rel='stylesheet')
     link(href='/assets/css/application.css', rel='stylesheet')
     link(href='/img/favicon.ico', rel='shortcut icon', type='image/x-icon')
@@ -9,6 +9,5 @@ html
     script(src='/assets/js/application.js')
     base(href="/")
 
-  body(ng-app="tuneyard")
-
+  body
     block content
