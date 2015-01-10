@@ -1,5 +1,9 @@
 {
   "apiKeys": {
-    "youtube": "< YOUTUBE KEY >"
+    "youtube": "< YOUTUBE KEY >",
+    "soundcloud": {
+      "clientId": "< SOUNDCLOUD CLIENT ID >",
+      "clientSecret": "< SOUNDCLOUD CLIENT SECRET >"
+    }
   }
 }
