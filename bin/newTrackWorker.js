@@ -18,6 +18,7 @@ var subs = [
   'indie',
   'indiefolk',
   'folkrock',
+  'altcountry',
   'indie_rock',
   'indiewok',
   'flocked',
