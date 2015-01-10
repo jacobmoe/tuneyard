@@ -1,6 +1,6 @@
 angular.module('tuneyard').directive('tyPlayer', [
-'socket', '$rootScope', '$timeout', '$sce',
-function(socket, $rootScope, $timeout, $sce) {
+'socket', '$rootScope', '$timeout', '$sce', '$window', 'soundcloud',
+function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
 
   return {
     restrict: 'E',
@@ -10,34 +10,15 @@ function(socket, $rootScope, $timeout, $sce) {
       scope.muted = false
       scope.track = {}
 
-      //"?url=https://api.soundcloud.com/tracks/39804767&show_artwork=false&liking=false&sharing=false&auto_play=true"
-      
-      scope.scPlayerBase = $sce.trustAsResourceUrl("https://w.soundcloud.com/player?url=https://api.soundcloud.com/tracks/39804767&show_artwork=false&liking=false&sharing=false&auto_play=true")
-
-      var iframeElement = document.querySelector('iframe#sc-widget')
-      var scWidget        = SC.Widget(iframeElement)
-
-      var newUrl = "https://api.soundcloud.com/tracks/39804766"
-
-      // widget.load(newUrl)
-
-      scWidget.bind(SC.Widget.Events.READY, function() {
-        scWidget.load(newUrl, {
-          show_artwork: false,
-          liking: false,
-          sharing: false,
-          auto_play: true
-        })
-      })
-
-      scWidget.bind(SC.Widget.Events.PLAY, function(){
-        scWidget.seekTo(10000)
-      });
+      var scIframe = $window.document.querySelector('iframe#sc-widget')
+      soundcloud.init(scIframe)
 
       scope.playerVars = {
         controls: 0,
         autoplay: 1
       }
+      
+      soundcloud.loadTrack("39804766", 10000)
       
       scope.mute = function (youtubePlayer) {
         youtubePlayer.mute()
