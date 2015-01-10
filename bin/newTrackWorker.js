@@ -36,7 +36,7 @@ function buildTrack(playlist, data, cb) {
 
   if (trackInPlaylist(playlist, vidId)) return cb()
 
-  youtube.getVideoData(vidId, function (err, videoData) {
+  youtube.getTrackData(vidId, function (err, videoData) {
     if (err) return cb()
     
     console.log('adding new track:', videoData.title)
