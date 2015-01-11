@@ -31,6 +31,10 @@ angular.module('tuneyard').factory('soundcloud',
         if (muted) mute()
         widget.seekTo(startAt * 1000)
       })
+
+      widget.bind(SC.Widget.Events.ERROR, function(a, b, c) {
+        $rootScope.$broadcast('player:error', {message: errorMessage})
+      })
     }
 
     function loadTrack (trackId, startTime) {
@@ -96,6 +100,10 @@ angular.module('tuneyard').factory('soundcloud',
         muted = false
       }
     }
+    
+    function reset() {
+      attempt = 0
+    }
 
     return {
       init: init,
@@ -103,6 +111,7 @@ angular.module('tuneyard').factory('soundcloud',
       stop: stop,
       mute: mute,
       unmute: unmute,
+      reset: reset,
       isLoaded: function () {
         return loaded
       }

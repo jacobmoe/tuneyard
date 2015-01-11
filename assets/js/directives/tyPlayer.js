@@ -8,7 +8,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
     templateUrl: '/assets/templates/directives/ty-player.html',
     link: function(scope, element) {
       scope.muted = false
-      scope.track = {}
+      scope.ytTrack = {}
 
       var scIframe = $window.document.querySelector('iframe#sc-widget')
       soundcloud.init(scIframe)
@@ -40,6 +40,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
         console.log("new current track", data)
 
         if (data.source == 'Soundcloud') {
+          soundcloud.reset()
           soundcloud.loadTrack(data.sourceId, 0)
           scope.ytTrack = null
         } else {
@@ -50,6 +51,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
             delete scope.playerVars.start
         }
 
+        scope.currentTrack = data
         $rootScope.$broadcast('newTrack', data)
       })
 
@@ -72,8 +74,12 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
         console.log('playlist error', error)
       })
       
-      $rootScope.$on('player:error', function (err) {
-        scope.currentTrack.title = "Error: " + err.message
+      $rootScope.$on('player:error', function (event, err) {
+        var message = "Error: " + err.message
+        scope.currentTrack = {
+          title: message,
+          artist: null
+        }
       })
 
       socket.emit('player:loaded', {playlistId: $rootScope.currentPlaylist.id})
