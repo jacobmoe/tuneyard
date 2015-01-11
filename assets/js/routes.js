@@ -8,20 +8,24 @@ function($stateProvider, $urlRouterProvider, $locationProvider) {
 
   $stateProvider
   .state('index', {
-    abstract: true,
+    url: '/{playlistName:.*}',
     resolve: {
       playlist: [
-      '$rootScope', '$http', '$location',
-      function ($rootScope, $http, $location) {
-        var path = $location.path()
+      '$rootScope', '$http', '$location', '$state', '$stateParams',
+      function ($rootScope, $http, $location, $state, $stateParams) {
+        var name = $stateParams.playlistName
 
-        if (path === '/') path = '/default'
+        if (name === '') name = 'default'
 
-        var url = 'api/playlists' + path + '?truncated=true'
+        var url = 'api/playlists/' + name + '?truncated=true'
 
         return $http.get(url).then(function (response) {
           $rootScope.currentPlaylist = response.data
           return response.data
+        })
+        .catch(function (err) {
+          if (name != 'default')
+            $state.go('index')
         })
       }],
       currentUser: ['$rootScope', 'auth', function ($rootScope, auth) {
@@ -44,11 +48,5 @@ function($stateProvider, $urlRouterProvider, $locationProvider) {
         controller: 'BodyCtrl'
       }
     }
-  })
-  .state('index.default', {
-    url: '/'
-  })
-  .state('index.custom', {
-    url: '/{playlistName:(?:fm|default)}'
   })
 }])

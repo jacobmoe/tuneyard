@@ -4,7 +4,7 @@ angular.module('tuneyard').controller('SidebarCtrl',
     $scope.sidebarOpen = false
     $rootScope.unread = null
     $scope.currentMessage = ''
-
+    
     $scope.toggleOpen = function () {
       if (!$scope.sidebarOpen) {
         $rootScope.unread = null
@@ -15,11 +15,7 @@ angular.module('tuneyard').controller('SidebarCtrl',
     }
  
     $scope.gotoPlaylist = function (name) {
-      if (name === 'default') {
-        $state.go('index.default', {reload: true})
-      } else {
-        $state.go('index.custom', {playlistName: name}, {reload: true})
-      }
+      $state.go('index', {playlistName: name})
     }
 
     $scope.addNewMessage = function () {
@@ -28,11 +24,11 @@ angular.module('tuneyard').controller('SidebarCtrl',
     }
 
 
-    $rootScope.$on('auth-changed', function (event, data) {
+    $scope.$on('auth-changed', function (event, data) {
       $rootScope.currentUser = data
     })
 
-    $rootScope.$on('messages:display', function (event, data) {
+    $scope.$on('messages:display', function (event, data) {
       if ($scope.sidebarOpen) return
       if (data.content === $scope.currentUser.name + ' connected') return
 

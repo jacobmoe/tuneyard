@@ -9,7 +9,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
     link: function(scope, element) {
       scope.messages = []
 
-      $rootScope.$on('newMessageEntered', function (event, message) {
+      scope.$on('newMessageEntered', function (event, message) {
         var playlist = Playlist.new($rootScope.currentPlaylist)
 
         socket.emit('messages:create', {
@@ -34,7 +34,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
         scrollToChatBottom()
       })
 
-      $rootScope.$on('sidebarOpened', function () {
+      scope.$on('sidebarOpened', function () {
         scrollToChatBottom()
       })
       

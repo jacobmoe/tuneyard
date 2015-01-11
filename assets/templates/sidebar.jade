@@ -4,6 +4,14 @@
       ng-click='toggleOpen()'
       class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}"
       ng-class="unread ? 'u-color--primary' : 'u-color--grey'")
+      
+    ul.tab-trigger(ng-show="sidebarOpen")
+      li(
+        ng-click="gotoPlaylist('')"
+        ng-class="{active: currentPlaylist.name === 'default'}") new
+      li(
+        ng-click="gotoPlaylist('fm')"
+        ng-class="{active: currentPlaylist.name === 'fm'}") fm
   .sidebar-body(ng-show="sidebarOpen")
     ty-login-form(ng-if='!currentUser')
     ty-chat(ng-if='currentUser')
