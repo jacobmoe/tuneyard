@@ -7,19 +7,18 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
     replace: true,
     templateUrl: '/assets/templates/directives/ty-chat.html',
     link: function(scope, element) {
-      scope.currentMessage = ''
       scope.messages = []
 
-      scope.newMessage = function () {
+      $rootScope.$on('newMessageEntered', function (event, message) {
         var playlist = Playlist.new($rootScope.currentPlaylist)
 
         socket.emit('messages:create', {
-          content: scope.currentMessage,
+          content: message,
           account: $rootScope.currentUser._id
         })
 
-        if (!chatCommands.process(scope.currentMessage, playlist)) {
-          var sourceData = sourceParser.parse(scope.currentMessage)
+        if (!chatCommands.process(message, playlist)) {
+          var sourceData = sourceParser.parse(message)
 
           if (sourceData) {
             playlist.insertTrack(sourceData, function (err, data) {
@@ -29,9 +28,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
             })
           }
         }
-
-        scope.currentMessage = ''
-      }
+      })
 
       scope.$watchCollection('messages', function () {
         scrollToChatBottom()
@@ -64,7 +61,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
         $timeout(function () {
           var chatBox = element.find('.chatBox')[0]
           if (!chatBox) return
-
+          
           chatBox.scrollTop = chatBox.scrollHeight
         }, 50)
 

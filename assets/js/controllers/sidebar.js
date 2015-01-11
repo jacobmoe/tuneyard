@@ -3,6 +3,7 @@ angular.module('tuneyard').controller('SidebarCtrl',
   function($scope, $rootScope, playlist, auth, $state) {
     $scope.sidebarOpen = false
     $rootScope.unread = null
+    $scope.currentMessage = ''
 
     $scope.toggleOpen = function () {
       if (!$scope.sidebarOpen)
@@ -18,6 +19,12 @@ angular.module('tuneyard').controller('SidebarCtrl',
         $state.go('index.custom', {playlistName: name}, {reload: true})
       }
     }
+
+    $scope.addNewMessage = function () {
+      $rootScope.$broadcast('newMessageEntered', $scope.currentMessage)
+      $scope.currentMessage = ''
+    }
+
 
     $rootScope.$on('auth-changed', function (event, data) {
       $rootScope.currentUser = data
