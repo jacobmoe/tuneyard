@@ -1,6 +1,10 @@
 angular.module('tuneyard').factory('chatCommands', [
-'$rootScope', 'socket', 'Playlist', 'socket',
-function($rootScope, socket, Playlist, socket) {
+'$rootScope', '$http', 'socket', 'Playlist', 'socket',
+function($rootScope, $http, socket, Playlist, socket) {
+  
+  var sources = {
+    reddit: "http://www.reddit.com/r/"
+  }
 
   function drop(playlist) {
     if ($rootScope.currentTrack) {
@@ -33,6 +37,22 @@ function($rootScope, socket, Playlist, socket) {
       }
     })
   }
+  
+  function addSource(name, identifier) {
+    if (name === 'reddit') {
+      var url = sources.reddit + identifier
+
+      $http.post(url).success(function(data) {
+        debugger
+      })
+      .error(function(data) {
+        debugger
+        socket.emit('notices:send', {content: 'no subreddit with that name'})
+      })
+    } else {
+      socket.emit('notices:send', {content: 'no source with that name'})
+    }
+  }
 
   function process(str, playlist) {
     var regex = /^add to ([\w-]*$)/
@@ -40,6 +60,16 @@ function($rootScope, socket, Playlist, socket) {
 
     if (match) {
       add(match[1], playlist)
+      return true
+    }
+
+    regex = /^add source ([\w-]*) ([\w-]*$)/
+    match = str.match(regex)
+
+    debugger
+
+    if (match) {
+      addSource(match[1], match[2], playlist)
       return true
     }
 
