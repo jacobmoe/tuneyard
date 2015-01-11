@@ -1,6 +1,6 @@
 angular.module('tuneyard').directive('tyChat', [
-'socket', '$rootScope', 'Playlist', 'sourceParser', '$timeout', 'chatCommands',
-function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
+'socket', '$rootScope', 'Playlist', 'sourceParser', '$timeout', 'chatCommands', '$sce',
+function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sce) {
 
   return {
     restrict: 'E',
@@ -36,6 +36,10 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
       scope.$watchCollection('messages', function () {
         scrollToChatBottom()
       })
+      
+      scope.trustedHtml = function (content) {
+        return $sce.trustAsHtml(content)
+      }
 
       socket.on('messages:display', function (data) {
         scope.messages.push(data)
@@ -52,7 +56,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
       socket.on('notices:new', function (data) {
         console.log('new notice', data)
         data.type = 'notice'
-
+        
         scope.messages.push(data)
       })
 

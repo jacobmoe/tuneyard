@@ -23,6 +23,22 @@ function($rootScope, $http, socket, Playlist, socket) {
   function skip(playlist) {
     socket.emit('playlists:skipTrack', {playlistId: playlist.id})
   }
+  
+  function showSources(playlist) {
+    playlist.reload(function () {
+      if (playlist.sources && playlist.sources.length) {
+        var contentList = playlist.sources.map(function (s) {
+          if (s.type == 'reddit') return s.name
+          else return s.url
+        })
+
+        var content = '<strong>Subreddits:</strong><br>' + contentList.join('<br>')
+        socket.emit('messages:create', {content: content})
+      } else {
+        socket.emit('messages:create', {content: "no sources in this playlist"})
+      }
+    })
+  }
 
   function add(playlist, director, name) {
     switch (director) {
@@ -36,6 +52,17 @@ function($rootScope, $http, socket, Playlist, socket) {
         break
       default:
         socket.emit('notices:send', {content: "can't add that"})
+    }
+  }
+
+  function remove(playlist, director, name) {
+    switch (director) {
+      case 'subreddit':
+        var index = _.findIndex(playlist.sources, {type: 'reddit', name: name})
+        removeSource(playlist, index)
+        break
+      default:
+        socket.emit('notices:send', {content: "can't remove that"})
     }
   }
   
@@ -56,13 +83,26 @@ function($rootScope, $http, socket, Playlist, socket) {
   function addSource(playlist, params) {
     var apiUrl = '/api/playlists/' + playlist.name + '/sources'
 
-    $http.post(apiUrl, params).success(function(data) {
-      socket.emit('messages:create', {
-        content: '/r/' + params.name + ' added to sources'
-      })
+    playlist.addSource(params, function (err, result) {
+      if (err) {
+        socket.emit('notices:send', {content: 'no subreddit with that name'})
+      } else {
+        socket.emit('messages:create', {
+          content: '/r/' + params.name + ' added to sources'
+        })
+      }
     })
-    .error(function(data) {
-      socket.emit('notices:send', {content: 'no subreddit with that name'})
+  }
+
+  function removeSource(playlist, index, cb) {
+    playlist.reload(function () {
+      playlist.deleteSource(index, function (err, obj) {
+        if (err) {
+          socket.emit('notices:send', {content: 'not a source'})
+        } else {
+          socket.emit('messages:create', {content: 'removed from sources'})
+        }
+      })
     })
   }
 
@@ -75,12 +115,23 @@ function($rootScope, $http, socket, Playlist, socket) {
       return true
     }
 
+    regex = /^remove ([\w-]*) ([\w-]*$)/
+    match = str.match(regex)
+
+    if (match) {
+      remove(playlist, match[1], match[2])
+      return true
+    }
+
     switch (str) {
       case 'drop':
         drop(playlist)
         return true
       case 'skip':
         skip(playlist)
+        return true
+      case 'show sources':
+        showSources(playlist)
         return true
     }
 

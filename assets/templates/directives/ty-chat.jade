@@ -11,7 +11,7 @@
       .chatBox-item-content.chatBox-item-content--notice(ng-if="!message.account")
         .grid__item.one-fifth
         .grid__item.one-half
-          .small {{message.content}}
+          .small(ng-bind-html="trustedHtml(message.content)")
         .grid__item.one-quarter
           .label--small {{message.createdAt | date : 'short' }}
   input(
