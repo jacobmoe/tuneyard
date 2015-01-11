@@ -6,10 +6,11 @@ angular.module('tuneyard').factory('soundcloud',
       , scheduled
       , startAt = 0
       , loaded = false
+      , muted = false
       , attempt = 0
       , maxAttempts = 10
       , apiBaseUrl = "https://api.soundcloud.com/tracks/"
-      , errorMessage = 'Something is wrong with the player. Quick, tell someone!'
+      , errorMessage = 'Something is wrong with the player. Tell someone!'
 
     var options = {
       show_artwork: false,
@@ -23,9 +24,11 @@ angular.module('tuneyard').factory('soundcloud',
 
       widget.bind(SC.Widget.Events.READY, function() {
         loaded = true
+        widget.setVolume(100) 
       })
 
       widget.bind(SC.Widget.Events.PLAY, function() {
+        if (muted) mute()
         widget.seekTo(startAt * 1000)
       })
     }
@@ -66,10 +69,40 @@ angular.module('tuneyard').factory('soundcloud',
         return false
       }
     }
+    
+    function stop() {
+      if (scheduled) {
+        $timeout.cancel(scheduled)
+        scheduled = null
+      }
+      
+      attempt = 0
+
+      if (widget) {
+        widget.pause()
+      }
+    }
+    
+    function mute() {
+      if (widget) {
+        widget.setVolume(0) 
+        muted = true
+      }
+    }
+
+    function unmute() {
+      if (widget) {
+        widget.setVolume(100) 
+        muted = false
+      }
+    }
 
     return {
       init: init,
       loadTrack: loadTrack,
+      stop: stop,
+      mute: mute,
+      unmute: unmute,
       isLoaded: function () {
         return loaded
       }

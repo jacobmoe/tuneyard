@@ -19,12 +19,16 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
       }
 
       scope.mute = function (youtubePlayer) {
-        youtubePlayer.mute()
+        if (youtubePlayer) youtubePlayer.mute()
+        
+        soundcloud.mute()
         scope.muted = true
       }
 
       scope.unMute = function (youtubePlayer) {
-        youtubePlayer.unMute()
+        if (youtubePlayer) youtubePlayer.unMute()
+
+        soundcloud.unmute()
         scope.muted = false
       }
 
@@ -37,7 +41,9 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
 
         if (data.source == 'Soundcloud') {
           soundcloud.loadTrack(data.sourceId, 0)
+          scope.ytTrack = null
         } else {
+          soundcloud.stop()
           scope.ytTrack = data
 
           if (scope.playerVars.start)
@@ -67,7 +73,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
       })
       
       $rootScope.$on('player:error', function (err) {
-        scope.trackName = "Error: " + err.message
+        scope.currentTrack.title = "Error: " + err.message
       })
 
       socket.emit('player:loaded', {playlistId: $rootScope.currentPlaylist.id})
