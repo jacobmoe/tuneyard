@@ -6,7 +6,7 @@ describe('service: soundcloud', function () {
   describe('getTrackData', function () {
 
     var url = 'https://soundcloud.com/asthmatickitty/sufjan-stevens-silver-gold'
-    var expected = {
+    var returned = {
       id: '1',
       title: 'the title',
       duration: '10000'
@@ -18,17 +18,18 @@ describe('service: soundcloud', function () {
         return '/'
       })
       .get('/')
-      .reply(200, expected)
+      .reply(200, returned)
     })
 
     it('returns track data', function (done) {
 
       service.getTrackData(url, function (err, data) {
-        assert.deepEqual(data, {
-          id: '1',
+        var expected = {
+          sourceId: '1',
           title: 'the title',
-          length: '10000'
-        })
+          length: 10
+        }
+        assert.deepEqual(data, expected)
         done()
       })
     })
