@@ -8,6 +8,7 @@ var request = require('request')
 var Playlist = require('../lib/models/playlist')
   , db = require('../lib/db')
   , youtube = require('../lib/services/youtube')
+  , count = 0
 
 var domain = 'http://www.reddit.com'
 
@@ -38,8 +39,8 @@ function buildTrack(playlist, data, cb) {
 
   youtube.getVideoData(vidId, function (err, videoData) {
     if (err) return cb()
-    
-    console.log('adding new track:', videoData.title)
+
+    console.log('found new track:', videoData.title)
 
     var track = {
       title: videoData.title,
@@ -47,9 +48,8 @@ function buildTrack(playlist, data, cb) {
       sourceId: vidId,
       length: videoData.length
     }
-
-    playlist.insertTrack(track)
-    playlist.save(cb)
+    
+    cb(null, track)
   })
 
 }
@@ -71,14 +71,26 @@ function fetchTracks(playlist, url, done) {
 
         if (oembed.title && oembed.url) {
           jobs.push(function (cb) {
-            buildTrack(playlist, {title:  oembed.title, url: oembed.url}, cb)
+            var trackData = { title:  oembed.title, url: oembed.url }
+            buildTrack(playlist, trackData, cb)
           })
         }
       }
     })
 
-    async.series(jobs, done)
+    async.series(jobs, function (err, tracks) {
+      done(null, tracks)
+    })
   })
+}
+
+function addAllTracks (playlist, tracks, done) {
+  tracks.forEach(function (track) {
+    playlist.insertTrack(track)
+  })
+  
+  console.log("saving playlist")
+  playlist.save(done)
 }
 
 db.connect(function () {
@@ -94,6 +106,11 @@ db.connect(function () {
 
     })
 
-    async.series(jobs, process.exit)
+    async.series(jobs, function (err, allTracks) {
+      var tracks = _.flatten(allTracks)
+      
+      tracks = _.shuffle(tracks)
+      addAllTracks(playlist, tracks, process.exit)
+    })
   })
 })
