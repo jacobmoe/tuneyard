@@ -24,7 +24,22 @@ function($rootScope, $http, socket, Playlist, socket) {
     socket.emit('playlists:skipTrack', {playlistId: playlist.id})
   }
 
-  function add(newPlaylistName) {
+  function add(playlist, director, name) {
+    switch (director) {
+      case 'to':
+        addTrackToPlaylist(name)
+        break
+      case 'subreddit':
+        var url = 'http://reddit.com/r/' + name + '.json'
+        var params = { type: 'reddit', name: name, url: url }
+        addSource(playlist, params)
+        break
+      default:
+        socket.emit('notices:send', {content: "can't add that"})
+    }
+  }
+  
+  function addTrackToPlaylist(newPlaylistName) {
     var newPlaylist = Playlist.new({name: newPlaylistName})
 
     newPlaylist.insertTrack($rootScope.currentTrack, function (err, result) {
@@ -38,38 +53,25 @@ function($rootScope, $http, socket, Playlist, socket) {
     })
   }
   
-  function addSource(name, identifier) {
-    if (name === 'reddit') {
-      var url = sources.reddit + identifier
+  function addSource(playlist, params) {
+    var apiUrl = '/api/playlists/' + playlist.name + '/sources'
 
-      $http.post(url).success(function(data) {
-        debugger
+    $http.post(apiUrl, params).success(function(data) {
+      socket.emit('messages:create', {
+        content: '/r/' + params.name + ' added to sources'
       })
-      .error(function(data) {
-        debugger
-        socket.emit('notices:send', {content: 'no subreddit with that name'})
-      })
-    } else {
-      socket.emit('notices:send', {content: 'no source with that name'})
-    }
+    })
+    .error(function(data) {
+      socket.emit('notices:send', {content: 'no subreddit with that name'})
+    })
   }
 
   function process(str, playlist) {
-    var regex = /^add to ([\w-]*$)/
+    var regex = /^add ([\w-]*) ([\w-]*$)/
     var match = str.match(regex)
 
     if (match) {
-      add(match[1], playlist)
-      return true
-    }
-
-    regex = /^add source ([\w-]*) ([\w-]*$)/
-    match = str.match(regex)
-
-    debugger
-
-    if (match) {
-      addSource(match[1], match[2], playlist)
+      add(playlist, match[1], match[2])
       return true
     }
 
