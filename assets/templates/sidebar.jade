@@ -4,7 +4,7 @@
       ng-click='toggleOpen()'
       class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}"
       ng-class="unread ? 'u-color--primary' : 'u-color--grey'")
-  .sidebar-body(ng-if="sidebarOpen")
+  .sidebar-body(ng-show="sidebarOpen")
     ty-login-form(ng-if='!currentUser')
     ty-chat(ng-if='currentUser')
   .sidebar-footer(ng-show="sidebarOpen")

@@ -33,6 +33,10 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
       scope.$watchCollection('messages', function () {
         scrollToChatBottom()
       })
+
+      $rootScope.$on('sidebarOpened', function () {
+        scrollToChatBottom()
+      })
       
       scope.trustedHtml = function (content) {
         return $sce.trustAsHtml(content)

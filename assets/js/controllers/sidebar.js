@@ -6,8 +6,10 @@ angular.module('tuneyard').controller('SidebarCtrl',
     $scope.currentMessage = ''
 
     $scope.toggleOpen = function () {
-      if (!$scope.sidebarOpen)
+      if (!$scope.sidebarOpen) {
         $rootScope.unread = null
+        $rootScope.$broadcast('sidebarOpened')
+      }
 
       $scope.sidebarOpen = !$scope.sidebarOpen
     }
