@@ -97,11 +97,10 @@ db.connect(function () {
   var jobs = []
 
   Playlist.findOne({name: 'default'}, function (err, playlist) {
-    _.forEach(subs, function (sub) {
-      var url = domain + '/r/' + sub + '.json?limit=100'
+    _.forEach(playlist.sources, function (source) {
 
       jobs.push(function (cb) {
-        fetchTracks(playlist, url, cb)
+        fetchTracks(playlist, source.url, cb)
       })
 
     })
