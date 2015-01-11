@@ -2,8 +2,36 @@ angular.module('tuneyard').factory('chatCommands', [
 '$rootScope', '$http', 'socket', 'Playlist', 'socket',
 function($rootScope, $http, socket, Playlist, socket) {
   
+  var commandsHelp = {
+    'drop': 'remove current track from playlist',
+    'skip': 'skip current track',
+    'add to PLAYLIST_NAME': 'add current track to playlist',
+    'show sources': 'show all sources',
+    'add subreddit SUB_NAME': 'add source to playlist',
+    'remove subreddit SUB_NAME': 'remove source from playlist'
+  }
+  
   var sources = {
     reddit: "http://www.reddit.com/r/"
+  }
+  
+  function help() {
+    var content = ["<strong>Help</strong>"]
+    content.push("<ul class='help-items'>")
+    content.push('<li>Paste a youtube video to add a new track</li>')
+    content.push('<li>Sources are checked for new tracks every two hours</li>')
+    content.push('</ul>')
+    content.push("<strong>Commands</strong>")
+    content.push("<ul class='help-items'>")
+
+    Object.keys(commandsHelp).forEach(function (key) {
+      content.push("<li><div class='help-command'>" + key + "</div>")
+      content.push(commandsHelp[key] + '</li>')
+    })
+
+    content.push('</ul>')
+
+    socket.emit('messages:create', {content: content.join('')})
   }
 
   function drop(playlist) {
@@ -129,6 +157,9 @@ function($rootScope, $http, socket, Playlist, socket) {
         return true
       case 'skip':
         skip(playlist)
+        return true
+      case 'help':
+        help()
         return true
       case 'show sources':
         showSources(playlist)
