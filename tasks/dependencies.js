@@ -6,6 +6,7 @@ module.exports = {
     'bower_components/lodash/dist/lodash.min.js',
     'bower_components/angular-youtube-mb/dist/angular-youtube-embed.min.js',
     'bower_components/ui-router/release/angular-ui-router.min.js',
+    'bower_components/angular-cookies/angular-cookies.min.js',
 
     'node_modules/socket.io/node_modules/socket.io-client/socket.io.js',
 

@@ -17,9 +17,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
         controls: 0,
         autoplay: 1
       }
-      
-      soundcloud.loadTrack("39804766", 10000)
-      
+
       scope.mute = function (youtubePlayer) {
         youtubePlayer.mute()
         scope.muted = true
@@ -33,27 +31,43 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
       scope.$on('youtube.player.ready', function ($event, player) {
         if (scope.muted) player.mute()
       })
-      
+
       socket.on('tracks:startNew', function (data) {
         console.log("new current track", data)
-        scope.track = data
-        
-        if (scope.playerVars.start)
-          delete scope.playerVars.start
-        
+
+        if (data.source == 'Soundcloud') {
+          soundcloud.loadTrack(data.sourceId, 0)
+        } else {
+          scope.ytTrack = data
+
+          if (scope.playerVars.start)
+            delete scope.playerVars.start
+        }
+
         $rootScope.$broadcast('newTrack', data)
       })
-      
+
       socket.on('player:initialize', function (data) {
         console.log("init player", data)
-        scope.track = data
-        scope.playerVars.start = Number(data.startAt).toFixed()
+
+        var startAt = Number(data.startAt).toFixed()
+
+        if (data.source === 'Soundcloud') {
+          soundcloud.loadTrack(data.sourceId, startAt)
+        } else {
+          scope.ytTrack = data
+          scope.playerVars.start = startAt
+        }
 
         $rootScope.$broadcast('newTrack', data)
       })
 
       socket.on('playlist:error', function (error) {
         console.log('playlist error', error)
+      })
+      
+      $rootScope.$on('player:error', function (err) {
+        scope.trackName = "Error: " + err.message
       })
 
       socket.emit('player:loaded', {playlistId: $rootScope.currentPlaylist.id})

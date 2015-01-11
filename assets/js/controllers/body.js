@@ -1,7 +1,6 @@
 angular.module('tuneyard').controller('BodyCtrl',
-  ['$scope', '$rootScope', 'socket',
+  ['$scope', '$rootScope', 'socket', 
   function($scope, $rootScope, socket) {
-
     $rootScope.$on('auth-changed', function (event, data) {
       $rootScope.currentUser = data
     })
