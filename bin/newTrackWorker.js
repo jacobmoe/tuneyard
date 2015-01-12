@@ -35,10 +35,15 @@ function buildTrack(playlist, data, cb) {
 
   if (!vidId) return cb()
 
-  if (trackInPlaylist(playlist, vidId)) return cb()
+  if (trackInPlaylist(playlist, vidId)) {
+    return cb()
+  }
 
   youtube.getVideoData(vidId, function (err, videoData) {
-    if (err) return cb()
+    if (err) {
+      console.log("youtube.getVideoData error:", err)
+      return cb()
+    }
 
     console.log('found new track:', videoData.title)
 
@@ -48,7 +53,7 @@ function buildTrack(playlist, data, cb) {
       sourceId: vidId,
       length: videoData.length
     }
-    
+
     cb(null, track)
   })
 
@@ -58,7 +63,10 @@ function fetchTracks(playlist, url, done) {
   var jobs = []
 
   request(url, function (err, res, body) {
-    if (err || !body) return cb()
+    if (err || !body) {
+      console.log("fetchTracks request error:", err)
+      return cb()
+    }
 
     var data = JSON.parse(body).data
 
@@ -79,6 +87,10 @@ function fetchTracks(playlist, url, done) {
     })
 
     async.series(jobs, function (err, tracks) {
+      if (err) {
+        console.log("fetach all tracks error:", err)
+      }
+
       done(null, tracks)
     })
   })
@@ -88,8 +100,8 @@ function addAllTracks (playlist, tracks, done) {
   tracks.forEach(function (track) {
     playlist.insertTrack(track)
   })
-  
-  console.log("saving playlist")
+
+  console.log("saving", tracks.length, "tracks to to playlist")
   playlist.save(done)
 }
 
@@ -100,15 +112,24 @@ db.connect(function () {
     _.forEach(playlist.sources, function (source) {
 
       jobs.push(function (cb) {
+        console.log("adding tracks from subreddit:", source.name)
         fetchTracks(playlist, source.url, cb)
       })
-
     })
 
     async.series(jobs, function (err, allTracks) {
+      if (err) {
+        console.log("all tracks from all playlists err:", err)
+      }
+
       var tracks = _.flatten(allTracks)
-      
+
+      tracks = _.filter(tracks, function (t) {
+        return t
+      })
+
       tracks = _.shuffle(tracks)
+
       addAllTracks(playlist, tracks, process.exit)
     })
   })
