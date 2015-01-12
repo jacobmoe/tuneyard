@@ -1,17 +1,16 @@
 angular.module('tuneyard').controller('SidebarCtrl',
   ['$scope', '$rootScope', 'playlist', 'auth', '$state',
   function($scope, $rootScope, playlist, auth, $state) {
-    $scope.sidebarOpen = false
     $rootScope.unread = null
     $scope.currentMessage = ''
     
     $scope.toggleOpen = function () {
-      if (!$scope.sidebarOpen) {
+      if (!$rootScope.sidebarOpen) {
         $rootScope.unread = null
         $rootScope.$broadcast('sidebarOpened')
       }
 
-      $scope.sidebarOpen = !$scope.sidebarOpen
+      $rootScope.sidebarOpen = !$rootScope.sidebarOpen
     }
  
     $scope.gotoPlaylist = function (name) {
@@ -29,7 +28,7 @@ angular.module('tuneyard').controller('SidebarCtrl',
     })
 
     $scope.$on('messages:display', function (event, data) {
-      if ($scope.sidebarOpen) return
+      if ($rootScope.sidebarOpen) return
       if (data.content === $scope.currentUser.name + ' connected') return
 
       if (!$rootScope.unread) $rootScope.unread = 1
