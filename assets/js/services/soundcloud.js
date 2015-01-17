@@ -10,7 +10,7 @@ angular.module('tuneyard').factory('soundcloud',
       , attempt = 0
       , maxAttempts = 10
       , apiBaseUrl = "https://api.soundcloud.com/tracks/"
-      , errorMessage = 'Something is wrong with the player. Tell someone!'
+      , errorMessage = 'Something is wrong with the player. Skip or drop this track.'
 
     var options = {
       show_artwork: false,

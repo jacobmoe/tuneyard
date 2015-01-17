@@ -81,11 +81,12 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
       })
       
       $rootScope.$on('player:error', function (event, err) {
-        var message = "Error: " + err.message
+        var message = err.message
         scope.currentTrack = {
           title: message,
           artist: null
         }
+        scope.$apply()
       })
 
       socket.emit('player:loaded', {playlistId: $rootScope.currentPlaylist.id})
