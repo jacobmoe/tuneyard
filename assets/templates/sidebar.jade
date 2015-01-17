@@ -1,21 +1,26 @@
-.sidebar(ng-class="{'sidebar--open': sidebarOpen}")
-
-  a.fa.u-pullRight(
-    ng-click='toggleOpen()'
-    class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}"
-    ng-class="unread ? 'u-color--primary' : 'u-color--grey'")
-
-
+.sidebar-content(ng-class="{'sidebar--open': sidebarOpen}")
+  .sidebar-header
+    a.fa.u-pullRight(
+      ng-click='toggleOpen()'
+      class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}"
+      ng-class="unread ? 'u-color--primary' : 'u-color--grey'")
+      
+    ul.tab-trigger(ng-show="sidebarOpen")
+      li(
+        ng-click="gotoPlaylist('')"
+        ng-class="{active: currentPlaylist.name === 'default'}") home
+      li(
+        ng-click="gotoPlaylist('fm')"
+        ng-class="{active: currentPlaylist.name === 'fm'}") fm
   .sidebar-body(ng-show="sidebarOpen")
     ty-login-form(ng-if='!currentUser')
     ty-chat(ng-if='currentUser')
-    a.button(ng-if='currentUser' ng-click='logout()') logout
+  .sidebar-footer(ng-show="sidebarOpen")
+    input(
+      class='ty-chat-input'
+      type='text'
+      ng-enter='addNewMessage()'
+      ng-model='currentMessage'
+      placeholder='  (^._.^)ﾉ  ')
 
-    // ul.tab-trigger
-    //   li(
-    //     ng-click="gotoPlaylist('default')"
-    //     ng-class="{active: currentPlaylist.name === 'default'}") new
-
-    //   li(
-    //     ng-click="gotoPlaylist('fm')"
-    //     ng-class="{active: currentPlaylist.name === 'fm'}") fm
+    a.button.u-pullRight(ng-if='currentUser' ng-click='logout()') logout

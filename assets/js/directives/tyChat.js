@@ -1,25 +1,24 @@
 angular.module('tuneyard').directive('tyChat', [
-'socket', '$rootScope', 'Playlist', 'sourceParser', '$timeout', 'chatCommands',
-function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
+'socket', '$rootScope', 'Playlist', 'sourceParser', '$timeout', 'chatCommands', '$sce',
+function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sce) {
 
   return {
     restrict: 'E',
     replace: true,
     templateUrl: '/assets/templates/directives/ty-chat.html',
     link: function(scope, element) {
-      scope.currentMessage = ''
       scope.messages = []
 
-      scope.newMessage = function () {
+      scope.$on('newMessageEntered', function (event, message) {
         var playlist = Playlist.new($rootScope.currentPlaylist)
 
         socket.emit('messages:create', {
-          content: scope.currentMessage,
+          content: message,
           account: $rootScope.currentUser._id
         })
 
-        if (!chatCommands.process(scope.currentMessage, playlist)) {
-          var sourceData = sourceParser.parse(scope.currentMessage)
+        if (!chatCommands.process(message, playlist)) {
+          var sourceData = sourceParser.parse(message)
 
           if (sourceData) {
             playlist.insertTrack(sourceData, function (err, data) {
@@ -29,13 +28,19 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
             })
           }
         }
-
-        scope.currentMessage = ''
-      }
+      })
 
       scope.$watchCollection('messages', function () {
         scrollToChatBottom()
       })
+
+      scope.$on('sidebarOpened', function () {
+        scrollToChatBottom()
+      })
+      
+      scope.trustedHtml = function (content) {
+        return $sce.trustAsHtml(content)
+      }
 
       socket.on('messages:display', function (data) {
         scope.messages.push(data)
@@ -52,7 +57,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
       socket.on('notices:new', function (data) {
         console.log('new notice', data)
         data.type = 'notice'
-
+        
         scope.messages.push(data)
       })
 
@@ -60,7 +65,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands) {
         $timeout(function () {
           var chatBox = element.find('.chatBox')[0]
           if (!chatBox) return
-
+          
           chatBox.scrollTop = chatBox.scrollHeight
         }, 50)
 

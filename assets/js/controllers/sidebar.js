@@ -1,30 +1,34 @@
 angular.module('tuneyard').controller('SidebarCtrl',
   ['$scope', '$rootScope', 'playlist', 'auth', '$state',
   function($scope, $rootScope, playlist, auth, $state) {
-    $scope.sidebarOpen = false
     $rootScope.unread = null
-
+    $scope.currentMessage = ''
+    
     $scope.toggleOpen = function () {
-      if (!$scope.sidebarOpen)
+      if (!$rootScope.sidebarOpen) {
         $rootScope.unread = null
+        $rootScope.$broadcast('sidebarOpened')
+      }
 
-      $scope.sidebarOpen = !$scope.sidebarOpen
+      $rootScope.sidebarOpen = !$rootScope.sidebarOpen
     }
  
     $scope.gotoPlaylist = function (name) {
-      if (name === 'default') {
-        $state.go('index.default', {reload: true})
-      } else {
-        $state.go('index.custom', {playlistName: name}, {reload: true})
-      }
+      $state.go('index', {playlistName: name})
     }
 
-    $rootScope.$on('auth-changed', function (event, data) {
+    $scope.addNewMessage = function () {
+      $rootScope.$broadcast('newMessageEntered', $scope.currentMessage)
+      $scope.currentMessage = ''
+    }
+
+
+    $scope.$on('auth-changed', function (event, data) {
       $rootScope.currentUser = data
     })
 
-    $rootScope.$on('messages:display', function (event, data) {
-      if ($scope.sidebarOpen) return
+    $scope.$on('messages:display', function (event, data) {
+      if ($rootScope.sidebarOpen) return
       if (data.content === $scope.currentUser.name + ' connected') return
 
       if (!$rootScope.unread) $rootScope.unread = 1

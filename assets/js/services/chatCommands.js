@@ -1,6 +1,40 @@
 angular.module('tuneyard').factory('chatCommands', [
-'$rootScope', 'socket', 'Playlist', 'socket',
-function($rootScope, socket, Playlist, socket) {
+'$rootScope', '$http', 'socket', 'Playlist', 'socket',
+function($rootScope, $http, socket, Playlist, socket) {
+  
+  var commandsHelp = {
+    'drop': 'Remove current track from playlist',
+    'skip': 'Skip current track',
+    'add to PLAYLIST_NAME': 'Add current track to playlist',
+    'show sources': 'Show all sources',
+    'add subreddit SUB_NAME': 'Add source to playlist',
+    'remove subreddit SUB_NAME': 'Remove source from playlist'
+  }
+  
+  var sources = {
+    reddit: "http://www.reddit.com/r/"
+  }
+  
+  function help() {
+    var content = ["<strong>Help</strong>"]
+    content.push("<ul class='help-items'>")
+    content.push('<li>Paste a youtube video to add a new track</li>')
+    content.push('<li>You can add sources that will add tracks for you.')
+    content.push(' Only reddit is supported so far.</li>')
+    content.push('<li>Sources are checked for new tracks every two hours.</li>')
+    content.push('</ul>')
+    content.push("<strong>Commands</strong>")
+    content.push("<ul class='help-items'>")
+
+    Object.keys(commandsHelp).forEach(function (key) {
+      content.push("<li><div class='help-command'>" + key + "</div>")
+      content.push(commandsHelp[key] + '</li>')
+    })
+
+    content.push('</ul>')
+
+    socket.emit('messages:create', {content: content.join('')})
+  }
 
   function drop(playlist) {
     if ($rootScope.currentTrack) {
@@ -19,8 +53,50 @@ function($rootScope, socket, Playlist, socket) {
   function skip(playlist) {
     socket.emit('playlists:skipTrack', {playlistId: playlist.id})
   }
+  
+  function showSources(playlist) {
+    playlist.reload(function () {
+      if (playlist.sources && playlist.sources.length) {
+        var contentList = playlist.sources.map(function (s) {
+          if (s.type == 'reddit') return s.name
+          else return s.url
+        })
 
-  function add(newPlaylistName) {
+        var content = '<strong>Subreddits:</strong><br>' + contentList.join('<br>')
+        socket.emit('messages:create', {content: content})
+      } else {
+        socket.emit('messages:create', {content: "no sources in this playlist"})
+      }
+    })
+  }
+
+  function add(playlist, director, name) {
+    switch (director) {
+      case 'to':
+        addTrackToPlaylist(name)
+        break
+      case 'subreddit':
+        var url = 'http://reddit.com/r/' + name + '.json'
+        var params = { type: 'reddit', name: name, url: url }
+        addSource(playlist, params)
+        break
+      default:
+        socket.emit('notices:send', {content: "can't add that"})
+    }
+  }
+
+  function remove(playlist, director, name) {
+    switch (director) {
+      case 'subreddit':
+        var index = _.findIndex(playlist.sources, {type: 'reddit', name: name})
+        removeSource(playlist, index)
+        break
+      default:
+        socket.emit('notices:send', {content: "can't remove that"})
+    }
+  }
+  
+  function addTrackToPlaylist(newPlaylistName) {
     var newPlaylist = Playlist.new({name: newPlaylistName})
 
     newPlaylist.insertTrack($rootScope.currentTrack, function (err, result) {
@@ -33,13 +109,47 @@ function($rootScope, socket, Playlist, socket) {
       }
     })
   }
+  
+  function addSource(playlist, params) {
+    var apiUrl = '/api/playlists/' + playlist.name + '/sources'
+
+    playlist.addSource(params, function (err, result) {
+      if (err) {
+        socket.emit('notices:send', {content: 'no subreddit with that name'})
+      } else {
+        socket.emit('messages:create', {
+          content: '/r/' + params.name + ' added to sources'
+        })
+      }
+    })
+  }
+
+  function removeSource(playlist, index, cb) {
+    playlist.reload(function () {
+      playlist.deleteSource(index, function (err, obj) {
+        if (err) {
+          socket.emit('notices:send', {content: 'not a source'})
+        } else {
+          socket.emit('messages:create', {content: 'removed from sources'})
+        }
+      })
+    })
+  }
 
   function process(str, playlist) {
-    var regex = /^add to ([\w-]*$)/
+    var regex = /^add ([\w-]*) ([\w-]*$)/
     var match = str.match(regex)
 
     if (match) {
-      add(match[1], playlist)
+      add(playlist, match[1], match[2])
+      return true
+    }
+
+    regex = /^remove ([\w-]*) ([\w-]*$)/
+    match = str.match(regex)
+
+    if (match) {
+      remove(playlist, match[1], match[2])
       return true
     }
 
@@ -49,6 +159,12 @@ function($rootScope, socket, Playlist, socket) {
         return true
       case 'skip':
         skip(playlist)
+        return true
+      case 'help':
+        help()
+        return true
+      case 'show sources':
+        showSources(playlist)
         return true
     }
 

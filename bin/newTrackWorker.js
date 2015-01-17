@@ -8,6 +8,7 @@ var request = require('request')
 var Playlist = require('../lib/models/playlist')
   , db = require('../lib/db')
   , youtube = require('../lib/services/youtube')
+  , count = 0
 
 var domain = 'http://www.reddit.com'
 
@@ -34,7 +35,9 @@ function buildTrack(playlist, data, cb) {
 
   if (!vidId) return cb()
 
-  if (trackInPlaylist(playlist, vidId)) return cb()
+  if (trackInPlaylist(playlist, vidId)) {
+    return cb()
+  }
 
   youtube.getTrackData(vidId, function (err, videoData) {
     if (err) return cb()
@@ -48,8 +51,7 @@ function buildTrack(playlist, data, cb) {
       length: videoData.length
     }
 
-    playlist.insertTrack(track)
-    playlist.save(cb)
+    cb(null, track)
   })
 
 }
@@ -58,7 +60,10 @@ function fetchTracks(playlist, url, done) {
   var jobs = []
 
   request(url, function (err, res, body) {
-    if (err || !body) return cb()
+    if (err || !body) {
+      console.log("fetchTracks request error:", err)
+      return cb()
+    }
 
     var data = JSON.parse(body).data
 
@@ -71,29 +76,58 @@ function fetchTracks(playlist, url, done) {
 
         if (oembed.title && oembed.url) {
           jobs.push(function (cb) {
-            buildTrack(playlist, {title:  oembed.title, url: oembed.url}, cb)
+            var trackData = { title:  oembed.title, url: oembed.url }
+            buildTrack(playlist, trackData, cb)
           })
         }
       }
     })
 
-    async.series(jobs, done)
+    async.series(jobs, function (err, tracks) {
+      if (err) {
+        console.log("fetach all tracks error:", err)
+      }
+
+      done(null, tracks)
+    })
   })
+}
+
+function addAllTracks (playlist, tracks, done) {
+  tracks.forEach(function (track) {
+    playlist.insertTrack(track)
+  })
+
+  console.log("saving", tracks.length, "tracks to to playlist")
+  playlist.save(done)
 }
 
 db.connect(function () {
   var jobs = []
 
   Playlist.findOne({name: 'default'}, function (err, playlist) {
-    _.forEach(subs, function (sub) {
-      var url = domain + '/r/' + sub + '.json?limit=100'
+    _.forEach(playlist.sources, function (source) {
 
       jobs.push(function (cb) {
-        fetchTracks(playlist, url, cb)
+        console.log("adding tracks from subreddit:", source.name)
+        fetchTracks(playlist, source.url, cb)
       })
-
     })
 
-    async.series(jobs, process.exit)
+    async.series(jobs, function (err, allTracks) {
+      if (err) {
+        console.log("all tracks from all playlists err:", err)
+      }
+
+      var tracks = _.flatten(allTracks)
+
+      tracks = _.filter(tracks, function (t) {
+        return t
+      })
+
+      tracks = _.shuffle(tracks)
+
+      addAllTracks(playlist, tracks, process.exit)
+    })
   })
 })
