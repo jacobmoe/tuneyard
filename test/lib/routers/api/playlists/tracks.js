@@ -148,7 +148,8 @@ describe('router: playlists/tracks', function () {
           .reply(200, {
             id: '1',
             title: 'the title',
-            duration: '10000'
+            duration: '10000',
+            user: {username: 'the user'}
           })
 
           done()

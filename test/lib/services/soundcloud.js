@@ -9,7 +9,8 @@ describe('service: soundcloud', function () {
     var returned = {
       id: '1',
       title: 'the title',
-      duration: '10000'
+      duration: '10000',
+      user: {username: 'the user'}
     }
 
     beforeEach(function () {
@@ -27,7 +28,8 @@ describe('service: soundcloud', function () {
         var expected = {
           sourceId: '1',
           title: 'the title',
-          length: 10
+          length: 10,
+          artist: 'the user'
         }
         assert.deepEqual(data, expected)
         done()
