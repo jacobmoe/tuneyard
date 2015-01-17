@@ -7,6 +7,8 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
     replace: true,
     templateUrl: '/assets/templates/directives/ty-player.html',
     link: function(scope, element) {
+      var youtubePlayer
+
       scope.muted = false
       scope.ytTrack = {}
 
@@ -25,14 +27,16 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
         scope.muted = true
       }
 
-      scope.unMute = function (youtubePlayer) {
-        if (youtubePlayer) youtubePlayer.unMute()
+      scope.unMute = function (player) {
+        if (player) player.unMute()
 
         soundcloud.unmute()
         scope.muted = false
       }
 
       scope.$on('youtube.player.ready', function ($event, player) {
+        youtubePlayer = player
+
         if (scope.muted) player.mute()
       })
 
@@ -43,6 +47,8 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
           soundcloud.reset()
           soundcloud.loadTrack(data.sourceId, 0)
           scope.ytTrack = null
+
+          if (youtubePlayer) youtubePlayer.stopVideo()
         } else {
           soundcloud.stop()
           scope.ytTrack = data

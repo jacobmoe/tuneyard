@@ -51,7 +51,7 @@ function($rootScope, $http, socket, Playlist, socket) {
   }
 
   function skip(playlist) {
-    socket.emit('playlists:skipTrack', {playlistId: playlist.id})
+    socket.emit('playlists:skipTrack:request', {playlistId: playlist.id})
   }
   
   function showSources(playlist) {
