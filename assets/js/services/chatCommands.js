@@ -3,12 +3,12 @@ angular.module('tuneyard').factory('chatCommands', [
 function($rootScope, $http, socket, Playlist, socket) {
   
   var commandsHelp = {
-    'drop': 'remove current track from playlist',
-    'skip': 'skip current track',
-    'add to PLAYLIST_NAME': 'add current track to playlist',
-    'show sources': 'show all sources',
-    'add subreddit SUB_NAME': 'add source to playlist',
-    'remove subreddit SUB_NAME': 'remove source from playlist'
+    'drop': 'Remove current track from playlist',
+    'skip': 'Skip current track',
+    'add to PLAYLIST_NAME': 'Add current track to playlist',
+    'show sources': 'Show all sources',
+    'add subreddit SUB_NAME': 'Add source to playlist',
+    'remove subreddit SUB_NAME': 'Remove source from playlist'
   }
   
   var sources = {
@@ -19,7 +19,9 @@ function($rootScope, $http, socket, Playlist, socket) {
     var content = ["<strong>Help</strong>"]
     content.push("<ul class='help-items'>")
     content.push('<li>Paste a youtube video to add a new track</li>')
-    content.push('<li>Sources are checked for new tracks every two hours</li>')
+    content.push('<li>You can add sources that will add tracks for you.')
+    content.push(' Only reddit is supported so far.</li>')
+    content.push('<li>Sources are checked for new tracks every two hours.</li>')
     content.push('</ul>')
     content.push("<strong>Commands</strong>")
     content.push("<ul class='help-items'>")
@@ -49,7 +51,7 @@ function($rootScope, $http, socket, Playlist, socket) {
   }
 
   function skip(playlist) {
-    socket.emit('playlists:skipTrack', {playlistId: playlist.id})
+    socket.emit('playlists:skipTrack:request', {playlistId: playlist.id})
   }
   
   function showSources(playlist) {
