@@ -254,6 +254,10 @@ describe('router: playlists/tracks', function () {
               assert.isNull(err)
               assert.isArray(playlist.tracks)
               assert.equal(playlist.tracks.length, 0)
+
+              assert.equal(playlist.dropped.length, 1)
+              assert.equal(playlist.dropped[0].sourceId, '1')
+              assert.equal(playlist.dropped[0].source, 'Youtube')
               done()
             })
           })
