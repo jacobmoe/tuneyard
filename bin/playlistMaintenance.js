@@ -46,6 +46,8 @@ function servicePlaylist(playlist, done) {
 }
 
 db.connect(function () {
+  console.log("#### playlist maintenance", new Date(), "####")
+
   var jobs = []
 
   Playlist.find({}, function (err, playlists) {

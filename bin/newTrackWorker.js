@@ -126,6 +126,8 @@ function addAllTracks (playlist, tracks, done) {
 }
 
 db.connect(function () {
+  console.log("#### check for new tracks", new Date(), "####")
+
   var jobs = []
 
   Playlist.findOne({name: 'default'}, function (err, playlist) {
