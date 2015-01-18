@@ -18,7 +18,8 @@ function($rootScope, $http, socket, Playlist, socket) {
   function help() {
     var content = ["<strong>Help</strong>"]
     content.push("<ul class='help-items'>")
-    content.push('<li>Paste a youtube video to add a new track</li>')
+    content.push('<li>To add a new track, paste a link to a youtube video') 
+    content.push(' or a soundcloud song.</li>')
     content.push('<li>You can add sources that will add tracks for you.')
     content.push(' Only reddit is supported so far.</li>')
     content.push('<li>Sources are checked for new tracks every two hours.</li>')
