@@ -84,23 +84,7 @@ describe('router: playlists/tracks', function () {
 
   describe('POST /', function () {
     context('authorized', function () {
-      var agent, scope
-      
-      before(function (done) {
-        scope = nock('https://www.googleapis.com')
-        .filteringPath(function(path) {
-          return '/'
-        })
-        .get('/')
-        .reply(200, {
-          items: [{
-            snippet: {title: 'the title'},
-            contentDetails: {duration: 'PT2M3S'}
-          }]
-        })
-        
-        done()
-      }) 
+      var agent
 
       beforeEach(function (done) {
         agent = request.agent(app)
@@ -114,9 +98,27 @@ describe('router: playlists/tracks', function () {
           .expect(200)
           .end(done)
       })
-      
-      it('inserts a track in the playlist', function (done) {
-        agent
+
+
+      context('source is youtube', function () {
+        before(function (done) {
+          nock('https://www.googleapis.com')
+          .filteringPath(function(path) {
+            return '/'
+          })
+          .get('/')
+          .reply(200, {
+            items: [{
+              snippet: {title: 'the title'},
+              contentDetails: {duration: 'PT2M3S'}
+            }]
+          })
+
+          done()
+        })
+
+        it('inserts a track in the playlist', function (done) {
+          agent
           .post('/api/playlists/' + playlist.name + '/tracks')
           .send({source: 'Youtube', sourceId: '1'})
           .set('Accept', 'application/json')
@@ -131,7 +133,48 @@ describe('router: playlists/tracks', function () {
               done()
             })
           })
+        })
       })
+
+      context('source is soundcloud', function () {
+        var url = 'https://soundcloud.com/asthmatickitty/sufjan-stevens-silver-gold'
+
+        before(function (done) {
+          nock('https://api.soundcloud.com')
+          .filteringPath(function(path) {
+            return '/'
+          })
+          .get('/')
+          .reply(200, {
+            id: '1',
+            title: 'the title',
+            duration: '10000',
+            user: {username: 'the user'},
+            streamable: true
+          })
+
+          done()
+        })
+
+        it('inserts a track in the playlist', function (done) {
+          agent
+          .post('/api/playlists/' + playlist.name + '/tracks')
+          .send({source: 'Soundcloud', sourceId: url})
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            Playlist.findOne({_id: playlist.id}, function (err, playlist) {
+              assert.isNull(err)
+              assert.isArray(playlist.tracks)
+              assert.equal(playlist.tracks.length, 2)
+              assert.equal(playlist.tracks[1].title, 'the title')
+              done()
+            })
+          })
+        })
+      })
+
     })
 
     context('not authorized', function () {
@@ -153,7 +196,7 @@ describe('router: playlists/tracks', function () {
   describe('GET /:id', function () {
     context('authorized', function () {
       var agent, scope
-      
+
       beforeEach(function (done) {
         agent = request.agent(app)
 
@@ -166,7 +209,7 @@ describe('router: playlists/tracks', function () {
           .expect(200)
           .end(done)
       })
-      
+
       it('returns track at index', function (done) {
         agent
           .get('/api/playlists/' + playlist.name + '/tracks/0')
@@ -186,7 +229,7 @@ describe('router: playlists/tracks', function () {
   describe('DELETE /:id', function () {
     context('authorized', function () {
       var agent, scope
-      
+
       beforeEach(function (done) {
         agent = request.agent(app)
 
@@ -199,7 +242,7 @@ describe('router: playlists/tracks', function () {
           .expect(200)
           .end(done)
       })
-      
+
       it('removes the track at index from the playlist', function (done) {
         agent
           .delete('/api/playlists/' + playlist.name + '/tracks/0')
@@ -211,6 +254,10 @@ describe('router: playlists/tracks', function () {
               assert.isNull(err)
               assert.isArray(playlist.tracks)
               assert.equal(playlist.tracks.length, 0)
+
+              assert.equal(playlist.dropped.length, 1)
+              assert.equal(playlist.dropped[0].sourceId, '1')
+              assert.equal(playlist.dropped[0].source, 'Youtube')
               done()
             })
           })

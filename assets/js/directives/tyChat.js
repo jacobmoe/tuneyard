@@ -22,9 +22,20 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
 
           if (sourceData) {
             playlist.insertTrack(sourceData, function (err, data) {
-              socket.emit('messages:create', {
-                content: 'New track added: ' + data.title
-              })
+              if (err) {
+                var contents = [
+                  "Something went wrong.",
+                  "Maybe that track isn't streamable."
+                ]
+                          
+                socket.emit('messages:create', {
+                  content: contents.join(' ')
+                })
+              } else {
+                socket.emit('messages:create', {
+                  content: 'New track added: ' + data.title
+                })
+              }
             })
           }
         }

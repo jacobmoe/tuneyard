@@ -52,8 +52,6 @@ function($http) {
 
   Playlist.prototype.deleteSource = function (index, done) {
     var self = this
-    
-    debugger
 
     if (this.sources[index]) {
       $http.delete('/api/playlists/' + this.name + '/sources/' + index)
