@@ -8,42 +8,47 @@ var request = require('request')
 var Playlist = require('../lib/models/playlist')
   , db = require('../lib/db')
 
-var droppedExpiryTime = {amount: '1', unit: 'week'}
+var expiryTimes = {
+  tracks: {amount: '2', unit: 'weeks'},
+  dropped: {amount: '1', unit: 'weeks'}
+}
 
-function removeExpiredDropped (playlist) {
+function removeExpired (playlist, collectionName) {
   var toRemove = []
-  
-  var droppedLimit = moment().subtract(
-    droppedExpiryTime.amount,
-    droppedExpiryTime.unit
-  )
-  
-  for (var i = 0; i < playlist.dropped.length; i++) {
-    var track = playlist.dropped[i]
 
-    if (droppedLimit.isAfter(track.createdAt)) {
-      console.log("remove track from dropped list", track.sourceId)
+  var expiryTime = expiryTimes[collectionName]
+
+  var expiryLimit = moment().subtract(expiryTime.amount, expiryTime.unit)
+
+  for (var i = 0; i < playlist[collectionName].length; i++) {
+    var track = playlist[collectionName][i]
+
+    if (expiryLimit.isAfter(track.createdAt)) {
+      console.log("remove track from " + collectionName, track.sourceId)
       toRemove.push(track._id)
     }
   }
-  
+
   toRemove.forEach(function (id) {
-    playlist.dropped.id(id).remove()
+    playlist[collectionName].id(id).remove()
   })
 }
 
 function servicePlaylist(playlist, done) {
   if (playlist.dropped)
-    removeExpiredDropped(playlist)
-  
-  if (playlist.name === 'default')
+    removeExpired(playlist, 'dropped')
+
+  if (playlist.name === 'default') {
+    removeExpired(playlist, 'tracks')
+
     playlist.tracks = _.shuffle(playlist.tracks)
+  }
 
   playlist.save(done)
 }
 
 db.connect(function () {
-  console.log("#### playlist maintenance", new Date(), "####")
+  console.log("##### playlist maintenance", new Date(), "#####")
 
   var jobs = []
 
@@ -56,5 +61,5 @@ db.connect(function () {
 
     async.parallel(jobs, process.exit)
   })
-  
+
 })
