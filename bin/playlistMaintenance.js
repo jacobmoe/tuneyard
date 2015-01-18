@@ -10,7 +10,7 @@ var Playlist = require('../lib/models/playlist')
 
 var droppedExpiryTime = {amount: '1', unit: 'week'}
 
-function removeExpiredDropped (playlist, callback) {
+function removeExpiredDropped (playlist) {
   var toRemove = []
   
   var droppedLimit = moment().subtract(
@@ -30,19 +30,16 @@ function removeExpiredDropped (playlist, callback) {
   toRemove.forEach(function (id) {
     playlist.dropped.id(id).remove()
   })
-  
-  playlist.save(callback)
-
 }
 
 function servicePlaylist(playlist, done) {
-  if (playlist.dropped) {
-    removeExpiredDropped(playlist, function () {
-      done()
-    })
-  } else {
-    done()
-  }
+  if (playlist.dropped)
+    removeExpiredDropped(playlist)
+  
+  if (playlist.name === 'default')
+    playlist.tracks = _.shuffle(playlist.tracks)
+
+  playlist.save(done)
 }
 
 db.connect(function () {
