@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var request = require('request')
-  , prompt = require('prompt')
   , _ = require('lodash')
   , async = require('async')
 
@@ -9,7 +8,6 @@ var Playlist = require('../lib/models/playlist')
   , db = require('../lib/db')
   , youtube = require('../lib/services/youtube')
   , soundcloud = require('../lib/services/soundcloud')
-  , count = 0
 
 var domain = 'http://www.reddit.com'
 
