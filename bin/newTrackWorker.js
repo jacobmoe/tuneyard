@@ -8,6 +8,7 @@ var request = require('request')
 var Playlist = require('../lib/models/playlist')
   , db = require('../lib/db')
   , youtube = require('../lib/services/youtube')
+  , soundcloud = require('../lib/services/soundcloud')
   , count = 0
 
 var domain = 'http://www.reddit.com'
@@ -26,23 +27,24 @@ var subs = [
   'folk'
 ]
 
-function trackInPlaylist(playlist, vidId) {
-  return _.some(playlist.tracks, {sourceId: vidId})
+function trackInPlaylist(playlist, data) {
+  return _.some(playlist.tracks, data)
 }
 
-function buildTrack(playlist, data, cb) {
+function buildYoutubeTrack(playlist, data, cb) {
   var vidId = youtube.videoIdFromUrl(data.url)
 
   if (!vidId) return cb()
 
-  if (trackInPlaylist(playlist, vidId)) {
+  var criteria = {source: 'Youtube', sourceId: vidId}
+  if (trackInPlaylist(playlist, criteria)) {
     return cb()
   }
 
   youtube.getTrackData(vidId, function (err, videoData) {
     if (err) return cb()
     
-    console.log('adding new track:', videoData.title)
+    console.log('adding new youtube track:', videoData.title)
 
     var track = {
       title: videoData.title,
@@ -53,7 +55,27 @@ function buildTrack(playlist, data, cb) {
 
     cb(null, track)
   })
+}
 
+function buildSoundcloudTrack(playlist, data, cb) {
+  soundcloud.getTrackData(data.url, function (err, data) {
+    if (err) return cb()
+
+    var criteria = {
+      source: 'Soundcloud',
+      sourceId: data.sourceId.toString()
+    }
+
+    if (trackInPlaylist(playlist, criteria)) {
+      return cb()
+    }
+
+    console.log('adding new soundcloud track:', data.title)
+    
+    data.source = 'Soundcloud'
+
+    cb(null, data)
+  })
 }
 
 function fetchTracks(playlist, url, done) {
@@ -62,24 +84,25 @@ function fetchTracks(playlist, url, done) {
   request(url, function (err, res, body) {
     if (err || !body) {
       console.log("fetchTracks request error:", err)
-      return cb()
+      return done()
     }
 
     var data = JSON.parse(body).data
 
     _.forEach(data.children, function (post) {
       var data = post.data || {}
-      var media = data.media || {}
 
-      if (data.domain === 'youtube.com') {
-        var oembed = media.oembed || {}
-
-        if (oembed.title && oembed.url) {
+      if (data.title && data.url) {
+        if (data.domain === 'youtube.com') {
           jobs.push(function (cb) {
-            var trackData = { title:  oembed.title, url: oembed.url }
-            buildTrack(playlist, trackData, cb)
+            buildYoutubeTrack(playlist, data, cb)
+          })
+        } else if (data.domain === 'soundcloud.com') {
+          jobs.push(function (cb) {
+            buildSoundcloudTrack(playlist, data, cb)
           })
         }
+
       }
     })
 
