@@ -28,7 +28,9 @@ var subs = [
 ]
 
 function trackInPlaylist(playlist, data) {
-  return _.some(playlist.tracks, data)
+  var dropped = playlist.dropped || []
+  
+  return _.some(playlist.tracks, data) || _.some(dropped, data)
 }
 
 function buildYoutubeTrack(playlist, data, cb) {

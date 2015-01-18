@@ -127,4 +127,53 @@ describe('model: Playlist', function () {
     })
   })
 
+  describe('dropped schema', function () {
+    var playlist
+
+    beforeEach(function (done) {
+      var params = {
+        name: 'default',
+        tracks: [
+          {
+            title: 'track1',
+            source: 'Youtube',
+            sourceId: '1',
+            length: 1
+          },
+          {
+            title: 'track2',
+            source: 'Youtube',
+            sourceId: '2',
+            length: 2
+          }
+        ],
+        dropped: [
+          {
+            source: 'Youtube',
+            sourceId: '3',
+          },
+          {
+            source: 'Soundcloud',
+            sourceId: '4',
+          }
+        ],
+        currentTrackIndex: 0
+      }
+
+      Playlist.create(params, function (err, p) {
+        assert.isNull(err)
+        assert.ok(p)
+        assert.equal(p.tracks.length, 2)
+        playlist = p
+        done()
+      })
+    })
+
+    it('includes a createdAt virtual', function (done) {
+      assert.ok(playlist.dropped[0].createdAt)
+      
+      done()
+    })
+  })
+
 })
