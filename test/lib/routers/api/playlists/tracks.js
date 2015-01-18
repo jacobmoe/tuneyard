@@ -149,7 +149,8 @@ describe('router: playlists/tracks', function () {
             id: '1',
             title: 'the title',
             duration: '10000',
-            user: {username: 'the user'}
+            user: {username: 'the user'},
+            streamable: true
           })
 
           done()
