@@ -36,7 +36,7 @@ function buildYoutubeTrack(playlist, data, cb) {
 
   if (!vidId) return cb()
 
-  var criteria = {source: 'Youtube', sourceId: vidId}
+  var criteria = {origin: 'Youtube', originId: vidId}
   if (trackInPlaylist(playlist, criteria)) {
     return cb()
   }
@@ -48,8 +48,8 @@ function buildYoutubeTrack(playlist, data, cb) {
 
     var track = {
       title: videoData.title,
-      source: 'Youtube',
-      sourceId: vidId,
+      origin: 'Youtube',
+      originId: vidId,
       length: videoData.length
     }
 
@@ -62,8 +62,8 @@ function buildSoundcloudTrack(playlist, data, cb) {
     if (err) return cb()
 
     var criteria = {
-      source: 'Soundcloud',
-      sourceId: data.sourceId.toString()
+      origin: 'Soundcloud',
+      originId: data.originId.toString()
     }
 
     if (trackInPlaylist(playlist, criteria)) {
@@ -72,7 +72,7 @@ function buildSoundcloudTrack(playlist, data, cb) {
 
     console.log('adding new soundcloud track:', data.title)
 
-    data.source = 'Soundcloud'
+    data.origin = 'Soundcloud'
 
     cb(null, data)
   })

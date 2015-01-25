@@ -23,13 +23,13 @@ var feeds = {
 }
 
 function hydrateYoutubeTrack(data, cb) {
-  youtube.getTrackData(data.sourceId, function (err, videoData) {
+  youtube.getTrackData(data.originId, function (err, videoData) {
     if (err) return cb()
 
     var track = {
       title: videoData.title,
-      source: 'Youtube',
-      sourceId: data.sourceId,
+      origin: 'Youtube',
+      originId: data.originId,
       length: videoData.length,
       from: data.from
     }
@@ -39,10 +39,10 @@ function hydrateYoutubeTrack(data, cb) {
 }
 
 function hydrateSoundcloudTrack(data, cb) {
-  soundcloud.getTrackData(data.sourceId, function (err, result) {
+  soundcloud.getTrackData(data.originId, function (err, result) {
     if (err) return cb()
 
-    result.source = 'Soundcloud'
+    result.origin = 'Soundcloud'
     result.from = data.from
 
     cb(null, result)
@@ -53,11 +53,11 @@ function hydrateTracks(trackData, done) {
   var jobs = []
 
   trackData.forEach(function (data) {
-    if (data.source === 'Youtube') {
+    if (data.origin === 'Youtube') {
       jobs.push(function (cb) {
         hydrateYoutubeTrack(data, cb)
       })
-    } else if (data.source === 'Soundcloud') {
+    } else if (data.origin === 'Soundcloud') {
       jobs.push(function (cb) {
         hydrateSoundcloudTrack(data, cb)
       })
@@ -69,26 +69,26 @@ function hydrateTracks(trackData, done) {
   })
 }
 
-function buildTrackSourceData(url, tracks) {
-  var sourceData
+function buildTrackOriginData(url, tracks) {
+  var originData
 
   var soundcloudTrackId = soundcloud.trackIdFromEmbedUrl(url)
 
   if (soundcloudTrackId) {
-    sourceData = {source: 'Soundcloud', sourceId: soundcloudTrackId}
+    originData = {origin: 'Soundcloud', originId: soundcloudTrackId}
   } else if (soundcloud.isSoundcloudUrl(url)) {
-    sourceData = {source: 'Soundcloud', sourceId: url}
+    originData = {origin: 'Soundcloud', originId: url}
   } else {
     var id = youtube.videoIdFromUrl(url)
 
     if (!id) return
 
-    sourceData = {source: 'Youtube', sourceId: id}
+    originData = {origin: 'Youtube', originId: id}
   }
 
-  if (_.some(tracks, sourceData)) return
+  if (_.some(tracks, originData)) return
 
-  return sourceData
+  return originData
 }
 
 function scrapeFeed(url, from, done) {
@@ -102,9 +102,9 @@ function scrapeFeed(url, from, done) {
       var data
 
       if (name === 'a') {
-        data = buildTrackSourceData(attribs.href, tracks)
+        data = buildTrackOriginData(attribs.href, tracks)
       } else if (name === 'iframe') {
-        data = buildTrackSourceData(attribs.src, tracks)
+        data = buildTrackOriginData(attribs.src, tracks)
       }
 
       if (data) {
@@ -179,14 +179,14 @@ db.connect(function () {
     Playlist.findOne({name: 'default'}, function (err, playlist) {
 
       var newTracks = _.filter(tracks, function (track) {
-        var id = track.sourceId.toString()
-        var data = {source: track.source, sourceId: id}
+        var id = track.originId.toString()
+        var data = {origin: track.origin, originId: id}
 
         var shouldAdd = !_.some(playlist.tracks, data) &&
                         !_.some(playlist.dropped, data)
 
         if (shouldAdd)
-          console.log('adding', track.source, 'track from', track.from)
+          console.log('adding', track.origin, 'track from', track.from)
 
         return shouldAdd
       })

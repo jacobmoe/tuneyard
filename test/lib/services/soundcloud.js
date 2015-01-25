@@ -27,7 +27,7 @@ describe('service: soundcloud', function () {
       it('accepts a url and returns track data', function (done) {
         service.getTrackData(url, function (err, data) {
           var expected = {
-            sourceId: '1',
+            originId: '1',
             title: 'the title',
             length: 10,
             artist: 'the user'
@@ -40,7 +40,7 @@ describe('service: soundcloud', function () {
       it('accepts an id and returns track data', function (done) {
         service.getTrackData('123', function (err, data) {
           var expected = {
-            sourceId: '1',
+            originId: '1',
             title: 'the title',
             length: 10,
             artist: 'the user'

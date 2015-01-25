@@ -1,6 +1,6 @@
 angular.module('tuneyard').directive('tyChat', [
-'socket', '$rootScope', 'Playlist', 'sourceParser', '$timeout', 'chatCommands', '$sce',
-function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sce) {
+'socket', '$rootScope', 'Playlist', 'originParser', '$timeout', 'chatCommands', '$sce',
+function(socket, $rootScope, Playlist, originParser, $timeout, chatCommands, $sce) {
 
   return {
     restrict: 'E',
@@ -18,16 +18,16 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
         })
 
         if (!chatCommands.process(message, playlist)) {
-          var sourceData = sourceParser.parse(message)
+          var originData = originParser.parse(message)
 
-          if (sourceData) {
-            playlist.insertTrack(sourceData, function (err, data) {
+          if (originData) {
+            playlist.insertTrack(originData, function (err, data) {
               if (err) {
                 var contents = [
                   "Something went wrong.",
                   "Maybe that track isn't streamable."
                 ]
-                          
+
                 socket.emit('messages:create', {
                   content: contents.join(' ')
                 })
@@ -48,7 +48,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
       scope.$on('sidebarOpened', function () {
         scrollToChatBottom()
       })
-      
+
       scope.trustedHtml = function (content) {
         return $sce.trustAsHtml(content)
       }
@@ -68,7 +68,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
       socket.on('notices:new', function (data) {
         console.log('new notice', data)
         data.type = 'notice'
-        
+
         scope.messages.push(data)
       })
 
@@ -76,7 +76,7 @@ function(socket, $rootScope, Playlist, sourceParser, $timeout, chatCommands, $sc
         $timeout(function () {
           var chatBox = element.find('.chatBox')[0]
           if (!chatBox) return
-          
+
           chatBox.scrollTop = chatBox.scrollHeight
         }, 50)
 

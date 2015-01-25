@@ -33,8 +33,8 @@ describe('router: playlists', function () {
       name: 'default',
       tracks: [{
         title: 'track1',
-        source: 'Youtube',
-        sourceId: '1',
+        origin: 'Youtube',
+        originId: '1',
         length: 1
       }],
       currentTrackIndex: 0
@@ -49,7 +49,7 @@ describe('router: playlists', function () {
   describe('GET /:id', function () {
     context('authorized', function () {
       var agent, scope
-      
+
       beforeEach(function (done) {
         agent = request.agent(app)
 

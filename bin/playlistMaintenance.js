@@ -24,7 +24,7 @@ function removeExpired (playlist, collectionName) {
     var track = playlist[collectionName][i]
 
     if (expiryLimit.isAfter(track.createdAt)) {
-      console.log("remove track from " + collectionName, track.sourceId)
+      console.log("remove track from " + collectionName, track.originId)
       toRemove.push(track._id)
     }
   }

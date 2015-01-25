@@ -34,8 +34,8 @@ describe('router: playlists/tracks', function () {
       name: 'default',
       tracks: [{
         title: 'track1',
-        source: 'Youtube',
-        sourceId: '1',
+        origin: 'Youtube',
+        originId: '1',
         length: 1
       }],
       currentTrackIndex: 0
@@ -100,7 +100,7 @@ describe('router: playlists/tracks', function () {
       })
 
 
-      context('source is youtube', function () {
+      context('origin is youtube', function () {
         before(function (done) {
           nock('https://www.googleapis.com')
           .filteringPath(function(path) {
@@ -120,7 +120,7 @@ describe('router: playlists/tracks', function () {
         it('inserts a track in the playlist', function (done) {
           agent
           .post('/api/playlists/' + playlist.name + '/tracks')
-          .send({source: 'Youtube', sourceId: '1'})
+          .send({origin: 'Youtube', originId: '1'})
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -136,7 +136,7 @@ describe('router: playlists/tracks', function () {
         })
       })
 
-      context('source is soundcloud', function () {
+      context('origin is soundcloud', function () {
         var url = 'https://soundcloud.com/asthmatickitty/sufjan-stevens-silver-gold'
 
         before(function (done) {
@@ -159,7 +159,7 @@ describe('router: playlists/tracks', function () {
         it('inserts a track in the playlist', function (done) {
           agent
           .post('/api/playlists/' + playlist.name + '/tracks')
-          .send({source: 'Soundcloud', sourceId: url})
+          .send({origin: 'Soundcloud', originId: url})
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -256,8 +256,8 @@ describe('router: playlists/tracks', function () {
               assert.equal(playlist.tracks.length, 0)
 
               assert.equal(playlist.dropped.length, 1)
-              assert.equal(playlist.dropped[0].sourceId, '1')
-              assert.equal(playlist.dropped[0].source, 'Youtube')
+              assert.equal(playlist.dropped[0].originId, '1')
+              assert.equal(playlist.dropped[0].origin, 'Youtube')
               done()
             })
           })
