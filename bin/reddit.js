@@ -12,7 +12,7 @@ var Playlist = require('../lib/models/playlist')
 var domain = 'http://www.reddit.com'
 
 // http://www.reddit.com/r/Music/wiki/musicsubreddits
-
+// subs are now stored in db.
 var subs = [
   'indieheads',
   'indie',
@@ -131,7 +131,8 @@ db.connect(function () {
   var jobs = []
 
   Playlist.findOne({name: 'default'}, function (err, playlist) {
-    _.forEach(playlist.sources, function (source) {
+    var sources = _.filter(playlist.sources, {type: 'reddit'})
+    _.forEach(sources, function (source) {
 
       jobs.push(function (cb) {
         console.log("adding tracks from subreddit:", source.name)

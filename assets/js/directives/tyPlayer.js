@@ -22,7 +22,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
 
       scope.mute = function (youtubePlayer) {
         if (youtubePlayer) youtubePlayer.mute()
-        
+
         soundcloud.mute()
         scope.muted = true
       }
@@ -79,7 +79,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
       socket.on('playlist:error', function (error) {
         console.log('playlist error', error)
       })
-      
+
       $rootScope.$on('player:error', function (event, err) {
         var message = err.message
         scope.currentTrack = {
