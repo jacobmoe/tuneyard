@@ -6,12 +6,13 @@ var routes = require('../../../../../lib/routes')
   , middleware = require('../../../../../lib/middleware')
   , Playlist = require('../../../../../lib/models/playlist')
   , Account = require('../../../../../lib/models/account')
+  , Source = require('../../../../../lib/models/source')
 
 middleware(app)
 routes(app)
 
 describe('router: playlists/sources', function () {
-  var account, playlist
+  var account, playlist, source
 
   before(connectDb)
   beforeEach(clearCollections)
@@ -31,12 +32,21 @@ describe('router: playlists/sources', function () {
 
   beforeEach(function (done) {
     var params = {
+      name: 'indie',
+      type: 'reddit',
+      url: 'http://reddit.com/r/indie.json'
+    }
+
+    Source.create(params, function (err, result) {
+      source = result
+      done()
+    })
+  })
+
+  beforeEach(function (done) {
+    var params = {
       name: 'default',
-      sources: [{
-        name: 'indie',
-        type: 'reddit',
-        url: 'http://reddit.com/r/indie.json'
-      }],
+      sources: [source.id],
       currentSourceIndex: 0
     }
 
@@ -86,7 +96,7 @@ describe('router: playlists/sources', function () {
   describe('POST /', function () {
     context('authorized', function () {
       var agent, scope
-      
+
       beforeEach(function (done) {
         agent = request.agent(app)
 
@@ -109,7 +119,7 @@ describe('router: playlists/sources', function () {
           })
 
           done()
-        }) 
+        })
 
         it('inserts a source in the playlist', function (done) {
           var params = {
@@ -131,10 +141,13 @@ describe('router: playlists/sources', function () {
               assert.isNull(err)
               assert.isArray(playlist.sources)
               assert.equal(playlist.sources.length, 2)
-              assert.equal(playlist.sources[1].name, 'indieheads')
-              assert.equal(playlist.sources[1].type, 'reddit')
-              assert.equal(playlist.sources[1].url, 'http://reddit.com/r/indieheads.json')
-              done()
+
+              Source.findOne({_id: playlist.sources[1]}).exec(function (err, res) {
+                assert.equal(res.name, 'indieheads')
+                assert.equal(res.type, 'reddit')
+                assert.equal(res.url, 'http://reddit.com/r/indieheads.json')
+                done()
+              })
             })
           })
         })
@@ -164,7 +177,7 @@ describe('router: playlists/sources', function () {
           })
         })
       })
-      
+
       context('invalid content type', function () {
         before(function (done) {
           scope = nock('http://reddit.com')
@@ -174,7 +187,7 @@ describe('router: playlists/sources', function () {
           })
 
           done()
-        }) 
+        })
 
         it('returns a 400', function (done) {
           var params = {
@@ -212,7 +225,7 @@ describe('router: playlists/sources', function () {
           })
 
           done()
-        }) 
+        })
 
         it('returns a 400', function (done) {
           var params = {
@@ -262,7 +275,7 @@ describe('router: playlists/sources', function () {
   describe('GET /:id', function () {
     context('authorized', function () {
       var agent, scope
-      
+
       beforeEach(function (done) {
         agent = request.agent(app)
 
@@ -275,7 +288,7 @@ describe('router: playlists/sources', function () {
           .expect(200)
           .end(done)
       })
-      
+
       it('returns source at index', function (done) {
         agent
           .get('/api/playlists/' + playlist.name + '/sources/0')
@@ -297,7 +310,7 @@ describe('router: playlists/sources', function () {
   describe('DELETE /:id', function () {
     context('authorized', function () {
       var agent, scope
-      
+
       beforeEach(function (done) {
         agent = request.agent(app)
 
@@ -310,7 +323,7 @@ describe('router: playlists/sources', function () {
           .expect(200)
           .end(done)
       })
-      
+
       it('removes the source at index from the playlist', function (done) {
         agent
           .delete('/api/playlists/' + playlist.name + '/sources/0')
