@@ -30,7 +30,8 @@ function hydrateYoutubeTrack(data, cb) {
       title: videoData.title,
       source: 'Youtube',
       sourceId: data.sourceId,
-      length: videoData.length
+      length: videoData.length,
+      from: data.from
     }
 
     cb(null, track)
@@ -42,6 +43,7 @@ function hydrateSoundcloudTrack(data, cb) {
     if (err) return cb()
 
     result.source = 'Soundcloud'
+    result.from = data.from
 
     cb(null, result)
   })
@@ -89,7 +91,7 @@ function buildTrackSourceData(url, tracks) {
   return sourceData
 }
 
-function scrapeFeed(url, done) {
+function scrapeFeed(url, from, done) {
   var tracks = []
 
   var req = request(url)
@@ -105,7 +107,10 @@ function scrapeFeed(url, done) {
         data = buildTrackSourceData(attribs.src, tracks)
       }
 
-      if (data) tracks.push(data)
+      if (data) {
+        data.from = from
+        tracks.push(data)
+      }
     }
   }, {decodeEntities: true})
 
@@ -134,7 +139,6 @@ function scrapeFeed(url, done) {
 
     while (item = stream.read()) {
       htmlparser.write(item.description)
-      console.log("========", item.link)
       htmlparser.end()
     }
   })
@@ -162,7 +166,7 @@ db.connect(function () {
 
   Object.keys(feeds).forEach(function (key) {
     jobs.push(function (cb) {
-      scrapeFeed(feeds[key], cb)
+      scrapeFeed(feeds[key], key, cb)
     })
   })
 
@@ -178,8 +182,13 @@ db.connect(function () {
         var id = track.sourceId.toString()
         var data = {source: track.source, sourceId: id}
 
-        return !_.some(playlist.tracks, data) &&
-               !_.some(playlist.dropped, data)
+        var shouldAdd = !_.some(playlist.tracks, data) &&
+                        !_.some(playlist.dropped, data)
+
+        if (shouldAdd)
+          console.log('adding', track.source, 'track from', track.from)
+
+        return shouldAdd
       })
 
       newTracks = _.shuffle(newTracks)
