@@ -12,7 +12,14 @@ var db = require('../lib/db')
   , Playlist = require('../lib/models/playlist')
 
 var feeds = {
-  ObscureSound: 'http://feeds.feedburner.com/ObscureSound'
+  'http://www.obscuresound.com': 'http://feeds.feedburner.com/ObscureSound',
+  'http://www.gorillavsbear.net': 'http://feeds.feedburner.com/GVSB',
+  'http://www.hearya.com': 'http://feeds.feedburner.com/Hearya',
+  'http://diary.welikeitindie.com': 'http://feeds.feedburner.com/welikeitindie',
+  'http://blog.iso50.com': 'http://blog.iso50.com/feed/',
+  'http://adhoc.fm': 'http://adhoc.fm/feed/',
+  'http://www.indieshuffle.com': 'http://feeds.feedburner.com/indieshuffle/',
+  'http://pitchfork.com': 'http://pitchfork.com/rss/reviews/best/tracks/'
 }
 
 function hydrateYoutubeTrack(data, cb) {
@@ -127,6 +134,7 @@ function scrapeFeed(url, done) {
 
     while (item = stream.read()) {
       htmlparser.write(item.description)
+      console.log("========", item.link)
       htmlparser.end()
     }
   })
