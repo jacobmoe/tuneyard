@@ -111,68 +111,115 @@ describe('router: playlists/sources', function () {
       })
 
       context('valid content type', function () {
-        before(function (done) {
-          scope = nock('http://reddit.com')
-          .head('/r/indieheads.json')
-          .reply(200, '', {
-            'Content-Type': 'application/json; charset=UTF-8'
+        context('existing source', function () {
+          beforeEach(function (done) {
+            var params = {
+              type: 'reddit',
+              name: 'indieheads',
+              url: 'http://reddit.com/r/indieheads.json'
+            }
+
+            Source.create(params).then(function (source) {
+              done()
+            })
           })
 
-          done()
-        })
+          it('inserts an existing source in the playlist', function (done) {
+            var params = {
+              type: 'reddit',
+              name: 'indieheads',
+              url: 'http://reddit.com/r/indieheads.json'
+            }
 
-        it('inserts a source in the playlist', function (done) {
-          var params = {
-            type: 'reddit',
-            name: 'indieheads',
-            url: 'http://reddit.com/r/indieheads.json'
-          }
-
-          agent
-          .post('/api/playlists/' + playlist.name + '/sources')
-          .send(params)
-          .set('Accept', 'application/json')
-          .expect('Content-Type', /json/)
-          .expect(200)
-          .end(function(err, res) {
-            assert.isNull(err)
-
-            Playlist.findOne({_id: playlist.id}, function (err, playlist) {
+            agent
+            .post('/api/playlists/' + playlist.name + '/sources')
+            .send(params)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end(function(err, res) {
               assert.isNull(err)
-              assert.isArray(playlist.sources)
-              assert.equal(playlist.sources.length, 2)
 
-              Source.findOne({_id: playlist.sources[1]}).exec(function (err, res) {
-                assert.equal(res.name, 'indieheads')
-                assert.equal(res.type, 'reddit')
-                assert.equal(res.url, 'http://reddit.com/r/indieheads.json')
-                done()
+              Playlist.findOne({_id: playlist.id}, function (err, playlist) {
+                assert.isNull(err)
+                assert.isArray(playlist.sources)
+                assert.equal(playlist.sources.length, 2)
+
+                Source.findOne({_id: playlist.sources[1]}).exec(function (err, res) {
+                  assert.equal(res.name, 'indieheads')
+                  assert.equal(res.type, 'reddit')
+                  assert.equal(res.url, 'http://reddit.com/r/indieheads.json')
+                  done()
+                })
               })
             })
           })
         })
 
-        it('returns an error if source type not supported', function (done) {
-          var params = {
-            type: 'notreddit',
-            name: 'indieheads',
-            url: 'http://reddit.com/r/indieheads.json'
-          }
+        context('new source', function () {
+          before(function (done) {
+            scope = nock('http://reddit.com')
+            .head('/r/indieheads.json')
+            .reply(200, '', {
+              'Content-Type': 'application/json; charset=UTF-8'
+            })
 
-          agent
-          .post('/api/playlists/' + playlist.name + '/sources')
-          .send(params)
-          .set('Accept', 'application/json')
-          .expect('Content-Type', /json/)
-          .expect(415)
-          .end(function(err, res) {
-            assert.isNull(err)
+            done()
+          })
 
-            Playlist.findOne({_id: playlist.id}, function (err, playlist) {
+          it('inserts a source in the playlist', function (done) {
+            var params = {
+              type: 'reddit',
+              name: 'indieheads',
+              url: 'http://reddit.com/r/indieheads.json'
+            }
+
+            agent
+            .post('/api/playlists/' + playlist.name + '/sources')
+            .send(params)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end(function(err, res) {
               assert.isNull(err)
-              assert.isArray(playlist.sources)
-              assert.equal(playlist.sources.length, 1)
-              done()
+
+              Playlist.findOne({_id: playlist.id}, function (err, playlist) {
+                assert.isNull(err)
+                assert.isArray(playlist.sources)
+                assert.equal(playlist.sources.length, 2)
+
+                Source.findOne({_id: playlist.sources[1]}).exec(function (err, res) {
+                  assert.equal(res.name, 'indieheads')
+                  assert.equal(res.type, 'reddit')
+                  assert.equal(res.url, 'http://reddit.com/r/indieheads.json')
+                  done()
+                })
+              })
+            })
+          })
+
+          it('returns an error if source type not supported', function (done) {
+            var params = {
+              type: 'notreddit',
+              name: 'indieheads',
+              url: 'http://reddit.com/r/indieheads.json'
+            }
+
+            agent
+            .post('/api/playlists/' + playlist.name + '/sources')
+            .send(params)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(415)
+            .end(function(err, res) {
+              assert.isNull(err)
+
+              Playlist.findOne({_id: playlist.id}, function (err, playlist) {
+                assert.isNull(err)
+                assert.isArray(playlist.sources)
+                assert.equal(playlist.sources.length, 1)
+                done()
+              })
             })
           })
         })
