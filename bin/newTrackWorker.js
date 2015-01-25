@@ -27,7 +27,7 @@ var subs = [
 
 function trackInPlaylist(playlist, data) {
   var dropped = playlist.dropped || []
-  
+
   return _.some(playlist.tracks, data) || _.some(dropped, data)
 }
 
@@ -43,7 +43,7 @@ function buildYoutubeTrack(playlist, data, cb) {
 
   youtube.getTrackData(vidId, function (err, videoData) {
     if (err) return cb()
-    
+
     console.log('adding new youtube track:', videoData.title)
 
     var track = {
@@ -71,7 +71,7 @@ function buildSoundcloudTrack(playlist, data, cb) {
     }
 
     console.log('adding new soundcloud track:', data.title)
-    
+
     data.source = 'Soundcloud'
 
     cb(null, data)
@@ -146,10 +146,7 @@ db.connect(function () {
 
       var tracks = _.flatten(allTracks)
 
-      tracks = _.filter(tracks, function (t) {
-        return t
-      })
-
+      tracks = _.compact(tracks)
       tracks = _.shuffle(tracks)
 
       addAllTracks(playlist, tracks, process.exit)

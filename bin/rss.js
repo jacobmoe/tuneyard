@@ -9,22 +9,40 @@ var FeedParser = require('feedparser')
 var db = require('../lib/db')
   , youtube = require('../lib/services/youtube')
   , soundcloud = require('../lib/services/soundcloud')
+  , Playlist = require('../lib/models/playlist')
 
 var feeds = {
   ObscureSound: 'http://feeds.feedburner.com/ObscureSound'
 }
 
 function hydrateYoutubeTrack(data, cb) {
-  // return a track
+  youtube.getTrackData(data.sourceId, function (err, videoData) {
+    if (err) return cb()
+
+    var track = {
+      title: videoData.title,
+      source: 'Youtube',
+      sourceId: data.sourceId,
+      length: videoData.length
+    }
+
+    cb(null, track)
+  })
 }
 
 function hydrateSoundcloudTrack(data, cb) {
-  // return a track
+  soundcloud.getTrackData(data.sourceId, function (err, result) {
+    if (err) return cb()
+
+    result.source = 'Soundcloud'
+
+    cb(null, result)
+  })
 }
 
 function hydrateTracks(trackData, done) {
   var jobs = []
-  
+
   trackData.forEach(function (data) {
     if (data.source === 'Youtube') {
       jobs.push(function (cb) {
@@ -36,30 +54,32 @@ function hydrateTracks(trackData, done) {
       })
     }
   })
-  
-  async.series(jobs, done)
+
+  async.series(jobs, function (err, results) {
+    done(err, results)
+  })
 }
 
 function buildTrackSourceData(url, tracks) {
   var sourceData
 
-  if (soundcloud.isSoundcloudUrl(url)) {
-    sourceData = {source: 'Soundcloud', souceId: url}
+  var soundcloudTrackId = soundcloud.trackIdFromEmbedUrl(url)
 
-    if (_.some(tracks, sourceData)) return
-
-    return sourceData
+  if (soundcloudTrackId) {
+    sourceData = {source: 'Soundcloud', sourceId: soundcloudTrackId}
+  } else if (soundcloud.isSoundcloudUrl(url)) {
+    sourceData = {source: 'Soundcloud', sourceId: url}
   } else {
     var id = youtube.videoIdFromUrl(url)
 
     if (!id) return
-    
-    sourceData = {source: 'Youtube', souceId: id}
 
-    if (_.some(tracks, sourceData)) return
-
-    return sourceData
+    sourceData = {source: 'Youtube', sourceId: id}
   }
+
+  if (_.some(tracks, sourceData)) return
+
+  return sourceData
 }
 
 function scrapeFeed(url, done) {
@@ -73,17 +93,16 @@ function scrapeFeed(url, done) {
       var data
 
       if (name === 'a') {
-        data = buildTrackSourceData(attribs.href)
+        data = buildTrackSourceData(attribs.href, tracks)
       } else if (name === 'iframe') {
-        data = buildTrackSourceData(attribs.src)
+        data = buildTrackSourceData(attribs.src, tracks)
       }
 
       if (data) tracks.push(data)
     }
-  }) //, {decodeEntities: true})
+  }, {decodeEntities: true})
 
   req.on('error', function (error) {
-    console.log("request error ==>", error)
     done()
   })
 
@@ -113,13 +132,24 @@ function scrapeFeed(url, done) {
   })
 
   feedparser.on('end', function () {
-    hydrateTracks(tracks, done)
+    hydrateTracks(tracks, function (err, results) {
+      done(err, _.compact(results))
+    })
   })
+}
+
+function addAllTracks (playlist, tracks, done) {
+  tracks.forEach(function (track) {
+    playlist.insertTrack(track)
+  })
+
+  console.log("saving", tracks.length, "tracks to to playlist")
+  playlist.save(done)
 }
 
 db.connect(function () {
   console.log("##### rss", new Date(), "#####")
-  
+
   var jobs = []
 
   Object.keys(feeds).forEach(function (key) {
@@ -129,8 +159,24 @@ db.connect(function () {
   })
 
   async.parallel(jobs, function (err, tracks) {
-    // tracks should be all "hydrated" tracks. 
-    // check each track against existing tracks in the playlist
-    // shuffle them and add remaining to the default playlist
+    if (err || !tracks) return process.exit()
+
+    tracks = _.flatten(tracks)
+    tracks = _.compact(tracks)
+
+    Playlist.findOne({name: 'default'}, function (err, playlist) {
+
+      var newTracks = _.filter(tracks, function (track) {
+        var id = track.sourceId.toString()
+        var data = {source: track.source, sourceId: id}
+
+        return !_.some(playlist.tracks, data) &&
+               !_.some(playlist.dropped, data)
+      })
+
+      newTracks = _.shuffle(newTracks)
+
+      addAllTracks(playlist, newTracks, process.exit)
+    })
   })
 })
