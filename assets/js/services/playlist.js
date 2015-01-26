@@ -1,7 +1,7 @@
 angular.module('tuneyard').factory('Playlist', [
 '$http',
 function($http) {
-  
+
   function Playlist(data) {
     this.id = data.id
     this.name = data.name,
@@ -34,6 +34,16 @@ function($http) {
     $http.post('/api/playlists/' + this.name + '/sources', source)
     .success(function(data) {
       self.sources = data.sources
+      done(null, data)
+    })
+    .error(function(err) { done(err) })
+  }
+
+  Playlist.prototype.getSources = function (done) {
+    var self = this
+
+    $http.get('/api/playlists/' + this.name + '/sources')
+    .success(function(data) {
       done(null, data)
     })
     .error(function(err) { done(err) })
