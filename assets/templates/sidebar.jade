@@ -4,7 +4,7 @@
       ng-click='toggleOpen()'
       class="{{sidebarOpen ? 'fa-angle-left' : 'fa-bars'}}"
       ng-class="unread ? 'u-color--primary' : 'u-color--grey'")
-      
+
     ul.tab-trigger(ng-show="sidebarOpen")
       li(
         ng-click="gotoPlaylist('')"
@@ -23,4 +23,4 @@
       ng-model='currentMessage'
       placeholder='  (^._.^)ﾉ  ')
 
-    a.button.u-pullRight(ng-if='currentUser' ng-click='logout()') logout
+    a.button.button--small.u-pullRight(ng-if='currentUser' ng-click='logout()') logout
