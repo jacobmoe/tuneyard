@@ -5,6 +5,7 @@ var request = require('request')
   , async = require('async')
 
 var Playlist = require('../lib/models/playlist')
+  , Source = require('../lib/models/source')
   , db = require('../lib/db')
   , youtube = require('../lib/services/youtube')
   , soundcloud = require('../lib/services/soundcloud')
@@ -131,26 +132,28 @@ db.connect(function () {
   var jobs = []
 
   Playlist.findOne({name: 'default'}, function (err, playlist) {
-    var sources = _.filter(playlist.sources, {type: 'reddit'})
-    _.forEach(sources, function (source) {
+    Source.find({_id: {$in: playlist.sources}}, function (err, allSources) {
+      var sources = _.filter(allSources, {type: 'reddit'})
+      _.forEach(sources, function (source) {
 
-      jobs.push(function (cb) {
-        console.log("adding tracks from subreddit:", source.name)
-        fetchTracks(playlist, source.url, cb)
+        jobs.push(function (cb) {
+          console.log("adding tracks from subreddit:", source.name)
+          fetchTracks(playlist, source.url, cb)
+        })
       })
-    })
 
-    async.series(jobs, function (err, allTracks) {
-      if (err) {
-        console.log("all tracks from all playlists err:", err)
-      }
+      async.series(jobs, function (err, allTracks) {
+        if (err) {
+          console.log("all tracks from all playlists err:", err)
+        }
 
-      var tracks = _.flatten(allTracks)
+        var tracks = _.flatten(allTracks)
 
-      tracks = _.compact(tracks)
-      tracks = _.shuffle(tracks)
+        tracks = _.compact(tracks)
+        tracks = _.shuffle(tracks)
 
-      addAllTracks(playlist, tracks, process.exit)
+        addAllTracks(playlist, tracks, process.exit)
+      })
     })
   })
 })
