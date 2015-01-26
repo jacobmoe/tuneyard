@@ -23,7 +23,8 @@ var subs = [
   'indie_rock',
   'indiewok',
   'flocked',
-  'folk'
+  'folk',
+  'altrap'
 ]
 
 function trackInPlaylist(playlist, data) {
@@ -51,7 +52,8 @@ function buildYoutubeTrack(playlist, data, cb) {
       title: videoData.title,
       origin: 'Youtube',
       originId: vidId,
-      length: videoData.length
+      length: videoData.length,
+      source: data.sourceId
     }
 
     cb(null, track)
@@ -59,30 +61,31 @@ function buildYoutubeTrack(playlist, data, cb) {
 }
 
 function buildSoundcloudTrack(playlist, data, cb) {
-  soundcloud.getTrackData(data.url, function (err, data) {
+  soundcloud.getTrackData(data.url, function (err, result) {
     if (err) return cb()
 
     var criteria = {
       origin: 'Soundcloud',
-      originId: data.originId.toString()
+      originId: result.originId.toString()
     }
 
     if (trackInPlaylist(playlist, criteria)) {
       return cb()
     }
 
-    console.log('adding new soundcloud track:', data.title)
+    console.log('adding new soundcloud track:', result.title)
 
-    data.origin = 'Soundcloud'
+    result.origin = 'Soundcloud'
+    result.source = data.sourceId
 
-    cb(null, data)
+    cb(null, result)
   })
 }
 
-function fetchTracks(playlist, url, done) {
+function fetchTracks(playlist, source, done) {
   var jobs = []
 
-  request(url, function (err, res, body) {
+  request(source.url, function (err, res, body) {
     if (err || !body) {
       console.log("fetchTracks request error:", err)
       return done()
@@ -94,6 +97,8 @@ function fetchTracks(playlist, url, done) {
       var data = post.data || {}
 
       if (data.title && data.url) {
+        data.sourceId = source.id
+
         if (data.domain === 'youtube.com') {
           jobs.push(function (cb) {
             buildYoutubeTrack(playlist, data, cb)
@@ -109,7 +114,7 @@ function fetchTracks(playlist, url, done) {
 
     async.series(jobs, function (err, tracks) {
       if (err) {
-        console.log("fetach all tracks error:", err)
+        console.log("fetch all tracks error:", err)
       }
 
       done(null, tracks)
@@ -138,7 +143,7 @@ db.connect(function () {
 
         jobs.push(function (cb) {
           console.log("adding tracks from subreddit:", source.name)
-          fetchTracks(playlist, source.url, cb)
+          fetchTracks(playlist, source, cb)
         })
       })
 

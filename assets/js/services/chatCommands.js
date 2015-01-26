@@ -77,8 +77,23 @@ function($rootScope, $http, socket, Playlist, socket) {
         addTrackToPlaylist(name)
         break
       case 'subreddit':
-        var url = 'http://reddit.com/r/' + name + '.json'
-        var params = { type: 'reddit', name: name, url: url }
+        var originUrl = 'http://reddit.com/r/' + name
+
+        var params = {
+          type: 'reddit',
+          name: name,
+          originUrl: originUrl,
+          url: originUrl + '.json'
+        }
+
+        addSource(playlist, params)
+        break
+      case 'rss':
+        var params = {
+          type: 'rss',
+          url: name
+        }
+
         addSource(playlist, params)
         break
       default:
@@ -118,10 +133,10 @@ function($rootScope, $http, socket, Playlist, socket) {
 
     playlist.addSource(params, function (err, result) {
       if (err) {
-        socket.emit('notices:send', {content: 'no subreddit with that name'})
+        socket.emit('notices:send', {content: '(=^‥^=) something went wrong'})
       } else {
         socket.emit('messages:create', {
-          content: '/r/' + params.name + ' added to sources'
+          content: '~(=^‥^)ノ source added'
         })
       }
     })
@@ -132,7 +147,7 @@ function($rootScope, $http, socket, Playlist, socket) {
       if (err) {
         socket.emit('notices:send', {content: 'not a source'})
       } else {
-        socket.emit('messages:create', {content: 'removed from sources'})
+        socket.emit('messages:create', {content: '(^-人-^) source removed'})
       }
     })
   }

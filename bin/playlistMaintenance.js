@@ -10,7 +10,7 @@ var Playlist = require('../lib/models/playlist')
 
 var expiryTimes = {
   tracks: {amount: '2', unit: 'weeks'},
-  dropped: {amount: '1', unit: 'weeks'}
+  dropped: {amount: '4', unit: 'weeks'}
 }
 
 function removeExpired (playlist, collectionName) {

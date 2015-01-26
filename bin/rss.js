@@ -10,6 +10,7 @@ var db = require('../lib/db')
   , youtube = require('../lib/services/youtube')
   , soundcloud = require('../lib/services/soundcloud')
   , Playlist = require('../lib/models/playlist')
+  , Source = require('../lib/models/source')
 
 var feeds = {
   'http://www.obscuresound.com': 'http://feeds.feedburner.com/ObscureSound',
@@ -31,7 +32,7 @@ function hydrateYoutubeTrack(data, cb) {
       origin: 'Youtube',
       originId: data.originId,
       length: videoData.length,
-      from: data.from
+      source: data.source
     }
 
     cb(null, track)
@@ -43,7 +44,7 @@ function hydrateSoundcloudTrack(data, cb) {
     if (err) return cb()
 
     result.origin = 'Soundcloud'
-    result.from = data.from
+    result.source = data.source
 
     cb(null, result)
   })
@@ -91,10 +92,10 @@ function buildTrackOriginData(url, tracks) {
   return originData
 }
 
-function scrapeFeed(url, from, done) {
+function scrapeFeed(source, done) {
   var tracks = []
 
-  var req = request(url)
+  var req = request(source.url)
     , feedparser = new FeedParser()
 
   var htmlparser = new HtmlParser2.Parser({
@@ -108,7 +109,7 @@ function scrapeFeed(url, from, done) {
       }
 
       if (data) {
-        data.from = from
+        data.source = source.id
         tracks.push(data)
       }
     }
@@ -164,36 +165,39 @@ db.connect(function () {
 
   var jobs = []
 
-  Object.keys(feeds).forEach(function (key) {
-    jobs.push(function (cb) {
-      scrapeFeed(feeds[key], key, cb)
-    })
-  })
+  Playlist.findOne({name: 'default'}, function (err, playlist) {
+    Source.find({_id: {$in: playlist.sources}}, function (err, allSources) {
+      var sources = _.filter(allSources, {type: 'rss'})
 
-  async.parallel(jobs, function (err, tracks) {
-    if (err || !tracks) return process.exit()
-
-    tracks = _.flatten(tracks)
-    tracks = _.compact(tracks)
-
-    Playlist.findOne({name: 'default'}, function (err, playlist) {
-
-      var newTracks = _.filter(tracks, function (track) {
-        var id = track.originId.toString()
-        var data = {origin: track.origin, originId: id}
-
-        var shouldAdd = !_.some(playlist.tracks, data) &&
-                        !_.some(playlist.dropped, data)
-
-        if (shouldAdd)
-          console.log('adding', track.origin, 'track from', track.from)
-
-        return shouldAdd
+      sources.forEach(function (source) {
+        jobs.push(function (cb) {
+          scrapeFeed(source, cb)
+        })
       })
 
-      newTracks = _.shuffle(newTracks)
+      async.parallel(jobs, function (err, tracks) {
+        if (err || !tracks) return process.exit()
 
-      addAllTracks(playlist, newTracks, process.exit)
+        tracks = _.flatten(tracks)
+        tracks = _.compact(tracks)
+
+        var newTracks = _.filter(tracks, function (track) {
+          var id = track.originId.toString()
+          var data = {origin: track.origin, originId: id}
+
+          var shouldAdd = !_.some(playlist.tracks, data) &&
+                          !_.some(playlist.dropped, data)
+
+          if (shouldAdd)
+            console.log('adding', track.origin, 'track', track.title)
+
+          return shouldAdd
+        })
+
+        newTracks = _.shuffle(newTracks)
+
+        addAllTracks(playlist, newTracks, process.exit)
+      })
     })
   })
 })
