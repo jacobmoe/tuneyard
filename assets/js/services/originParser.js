@@ -1,11 +1,11 @@
-angular.module('tuneyard').factory('sourceParser', ['$rootScope', function($rootScope) {
-  
+angular.module('tuneyard').factory('originParser', ['$rootScope', function($rootScope) {
+
   // http://stackoverflow.com/a/10315969/624466
   function youtubeId(url) {
     var p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/
     return (url.match(p)) ? RegExp.$1 : null
   }
-  
+
   function isSoundcloudUrl(url) {
     var regexp = /^https?:\/\/soundcloud.com\/([\w-]*)\/([\w-]*)$/
     return !!url.match(regexp)
@@ -16,13 +16,13 @@ angular.module('tuneyard').factory('sourceParser', ['$rootScope', function($root
 
     if (youtubeId(url)) {
       data = {
-        source: 'Youtube',
-        sourceId: youtubeId(url)
+        origin: 'Youtube',
+        originId: youtubeId(url)
       }
     } else if (isSoundcloudUrl(url)) {
       data = {
-        source: 'Soundcloud',
-        sourceId: url
+        origin: 'Soundcloud',
+        originId: url
       }
     }
 

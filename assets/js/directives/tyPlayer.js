@@ -22,7 +22,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
 
       scope.mute = function (youtubePlayer) {
         if (youtubePlayer) youtubePlayer.mute()
-        
+
         soundcloud.mute()
         scope.muted = true
       }
@@ -43,9 +43,9 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
       socket.on('tracks:startNew', function (data) {
         console.log("new current track", data)
 
-        if (data.source == 'Soundcloud') {
+        if (data.origin == 'Soundcloud') {
           soundcloud.reset()
-          soundcloud.loadTrack(data.sourceId, 0)
+          soundcloud.loadTrack(data.originId, 0)
           scope.ytTrack = null
 
           if (youtubePlayer) youtubePlayer.stopVideo()
@@ -66,8 +66,8 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
 
         var startAt = Number(data.startAt).toFixed()
 
-        if (data.source === 'Soundcloud') {
-          soundcloud.loadTrack(data.sourceId, startAt)
+        if (data.origin === 'Soundcloud') {
+          soundcloud.loadTrack(data.originId, startAt)
         } else {
           scope.ytTrack = data
           scope.playerVars.start = startAt
@@ -79,7 +79,7 @@ function(socket, $rootScope, $timeout, $sce, $window, soundcloud) {
       socket.on('playlist:error', function (error) {
         console.log('playlist error', error)
       })
-      
+
       $rootScope.$on('player:error', function (event, err) {
         var message = err.message
         scope.currentTrack = {

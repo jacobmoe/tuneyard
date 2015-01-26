@@ -21,16 +21,16 @@ global.defer = Q.defer
 
 global.clearCollections = function (done) {
   var jobs = []
-  var collections = ['account', 'playlist']
-  
+  var collections = ['account', 'playlist', 'source']
+
   collections.forEach(function (col) {
     jobs.push(function (cb) {
       require('../lib/models/' + col).remove({}, cb)
     })
   })
-  
+
   async.parallel(jobs, done)
-} 
+}
 
 global.connectDb = function(done) {
   require('../lib/db').connect(done)

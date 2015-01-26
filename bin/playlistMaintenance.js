@@ -10,7 +10,7 @@ var Playlist = require('../lib/models/playlist')
 
 var expiryTimes = {
   tracks: {amount: '2', unit: 'weeks'},
-  dropped: {amount: '1', unit: 'weeks'}
+  dropped: {amount: '4', unit: 'weeks'}
 }
 
 function removeExpired (playlist, collectionName) {
@@ -24,7 +24,7 @@ function removeExpired (playlist, collectionName) {
     var track = playlist[collectionName][i]
 
     if (expiryLimit.isAfter(track.createdAt)) {
-      console.log("remove track from " + collectionName, track.sourceId)
+      console.log("remove track from " + collectionName, track.originId)
       toRemove.push(track._id)
     }
   }

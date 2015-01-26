@@ -25,8 +25,8 @@ describe('model: Playlist', function () {
         name: 'default',
         tracks: [{
           title: 'track1',
-          source: 'Youtube',
-          sourceId: '1',
+          origin: 'Youtube',
+          originId: '1',
           length: 1
         }],
         currentTrackIndex: 0
@@ -44,29 +44,29 @@ describe('model: Playlist', function () {
     it('inserts a track after the current track', function (done) {
       var track = {
         title: 'track2',
-        source: 'Youtube',
-        sourceId: '2',
+        origin: 'Youtube',
+        originId: '2',
         length: 1
       }
-      
+
       playlist.insertTrack(track)
-      
+
       assert.equal(playlist.tracks.length, 2)
       assert.equal(playlist.tracks[1].title, 'track2')
-      
+
       track.title = 'track3'
-      track.sourceId = '3'
-      
+      track.originId = '3'
+
       playlist.insertTrack(track)
-      
+
       assert.equal(playlist.tracks.length, 3)
       assert.equal(playlist.tracks[0].title, 'track1')
       assert.equal(playlist.tracks[1].title, 'track3')
       assert.equal(playlist.tracks[2].title, 'track2')
 
       track.title = 'track4'
-      track.sourceId = '4'
-      
+      track.originId = '4'
+
       playlist.currentTrackIndex = 1
       playlist.insertTrack(track)
 
@@ -89,14 +89,14 @@ describe('model: Playlist', function () {
         tracks: [
           {
             title: 'track1',
-            source: 'Youtube',
-            sourceId: '1',
+            origin: 'Youtube',
+            originId: '1',
             length: 1
           },
           {
             title: 'track2',
-            source: 'Youtube',
-            sourceId: '2',
+            origin: 'Youtube',
+            originId: '2',
             length: 2
           }
         ],
@@ -116,13 +116,13 @@ describe('model: Playlist', function () {
       assert.equal(0, playlist.currentTrackIndex)
 
       playlist.nextTrack()
-      
+
       assert.equal(1, playlist.currentTrackIndex)
 
       playlist.nextTrack()
 
       assert.equal(0, playlist.currentTrackIndex)
-      
+
       done()
     })
   })
@@ -135,12 +135,12 @@ describe('model: Playlist', function () {
         name: 'default',
         dropped: [
           {
-            source: 'Youtube',
-            sourceId: '3',
+            origin: 'Youtube',
+            originId: '3',
           },
           {
-            source: 'Soundcloud',
-            sourceId: '4',
+            origin: 'Soundcloud',
+            originId: '4',
           }
         ],
         currentTrackIndex: 0
