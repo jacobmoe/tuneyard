@@ -1,3 +1,14 @@
+/*
+ * playlist track schemas had source and sourceId fields
+ * source may be "Youtube" or "Soundcloud" with sourceId being the id of the track
+ * it got confusing with a "source" also pointing to an rss feed or a subreddit
+ * this renames source and sourceId fields to origin and originId
+ * in tracks and dropped subschemas
+ *
+ * meant to be run once but can serve as a template
+ * for renaming fields in subschemas. run directly in the mongo console
+ */
+
 db.playlists.find().forEach(function(playlist) {
   var set = {}, unset = {}
   playlist.tracks.forEach(function (track, index) {

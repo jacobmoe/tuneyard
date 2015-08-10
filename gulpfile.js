@@ -55,4 +55,3 @@ function notifyLiveReload(event) {
 }
 
 gulp.task('default', ['build'])
-

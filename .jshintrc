@@ -1,0 +1,4 @@
+{
+  "asi": true,       // i don't need no stinking semicolons.
+  "laxcomma": true   // leading commas? yes please.
+}
